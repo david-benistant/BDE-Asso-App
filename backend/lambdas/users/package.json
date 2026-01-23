@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.160",
+    "esbuild": "^0.27.2",
+    "typescript": "^5.9.3"
+  }
+}

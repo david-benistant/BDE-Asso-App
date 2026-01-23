@@ -1,0 +1,115 @@
+import { useEffect, useRef, useState } from "react";
+import NotificationPopover from "./Notifications";
+import { useToast } from "@contexts/ToastContext";
+import mePhoto from "@repositories/graph/me/photo/mePhoto";
+import type mePhotoValueObject from "@valueObjects/me/photo/mePhoto.valueObject";
+
+type TopBarProps = {
+    onSearch?: (value: string) => void;
+    setSideBarOpen: (value: boolean) => void
+};
+
+export default function TopBar({ onSearch, setSideBarOpen }: TopBarProps) {
+    const [search, setSearch] = useState("");
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    const buttonRef = useRef<HTMLDivElement>(null);
+    const { toast } = useToast();
+    const [mePhotoObject, setMePhotoObject] =
+        useState<mePhotoValueObject | null>(null);
+
+    useEffect(() => {
+        const fetchPhoto = async () => {
+            const mePhotoCaller = new mePhoto();
+
+            const object = await mePhotoCaller.get();
+
+            if (object.isFailure) {
+                toast(object.getError(), "error")
+            } else {
+                setMePhotoObject(object.getValue())
+            }
+        };
+
+        fetchPhoto()
+    }, []);
+
+    return (
+        <>
+            <div
+                className="fixed w-full h-14 bg-gray-800 flex items-center px-4 md:px-6 shadow-md"
+                ref={buttonRef}
+            >
+                <div className="flex-1" >
+                    <div className="md:hidden flex items-center p-4 ">
+
+                    <button
+                            onClick={() => setSideBarOpen(true)}
+                            className="text-2xl text-white"
+                        >
+                            ☰
+                        </button>
+                    </div>
+                </div>
+
+                {onSearch && (
+                    <input
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            onSearch(e.target.value);
+                        }}
+                        placeholder="Search..."
+                        className="hidden md:block h-9 w-64 px-4 rounded-md bg-white/15 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    />
+                )}
+
+                {onSearch && (
+                    <button
+                        onClick={() => setMobileSearchOpen(true)}
+                        className="md:hidden w-9 h-9 flex items-center justify-center rounded-full bg-white/15 hover:bg-white/25 text-white"
+                    >
+                        <svg
+                            className="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                        >
+                            <path d="M21 21l-4.3-4.3m1.3-5.7a7 7 0 1 1-14 0a7 7 0 0 1 14 0" />
+                        </svg>
+                    </button>
+                )}
+
+                <NotificationPopover />
+
+                <div className="ml-3 w-9 h-9 rounded-full bg-white/20 overflow-hidden">
+                    { mePhotoObject && 
+                    
+                    <img src={mePhotoObject.getUrl()} className="w-full h-full object-cover" />
+                    }
+                </div>
+            </div>
+
+            {mobileSearchOpen && (
+                <div className="fixed inset-0 bg-gray-800 z-50 flex items-center px-4">
+                    <input
+                        autoFocus
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            onSearch?.(e.target.value);
+                        }}
+                        placeholder="Search..."
+                        className="w-full h-12 px-4 rounded-md bg-white/15 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-white/50"
+                    />
+                    <button
+                        onClick={() => setMobileSearchOpen(false)}
+                        className="ml-3 text-white text-xl"
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
+        </>
+    );
+}

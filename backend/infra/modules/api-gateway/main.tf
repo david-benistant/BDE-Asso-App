@@ -1,0 +1,23 @@
+resource "aws_apigatewayv2_api" "api" {
+  name          = "bde-asso-api"
+  protocol_type = "HTTP"
+}
+
+resource "aws_apigatewayv2_stage" "api_stage" {
+  api_id      = aws_apigatewayv2_api.api.id
+  name        = "dev"
+  auto_deploy = true
+}
+
+output "api_stage_url" {
+  value = aws_apigatewayv2_stage.api_stage.invoke_url
+}
+
+
+output "api_id" {
+  value = aws_apigatewayv2_api.api.id
+}
+
+output "api_execution_arn" {
+  value = aws_apigatewayv2_api.api.execution_arn
+}

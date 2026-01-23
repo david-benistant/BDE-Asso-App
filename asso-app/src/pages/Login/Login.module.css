@@ -1,0 +1,32 @@
+.LoginMainContainer {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.LoginMainContainer > img {
+    width: min(90%, 400px);
+}
+
+.LoginMainContainer > button {
+    background-color: #013afb;
+    border: 3px solid white;
+    outline: none;
+    color: white;
+    padding: 20px;
+    font-size: 18px;
+    max-width: 70%;
+    cursor: pointer;
+}
+
+
+.LoginMainContainer > button:focus {
+    background-color: #013afb;
+    border: 3px solid white;
+    outline: 2px solid #013afb;
+
+}
