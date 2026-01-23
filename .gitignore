@@ -1,4 +1,5 @@
 node-modules
+**/node-modules
 
 **/dist/
 **/dist.zip
