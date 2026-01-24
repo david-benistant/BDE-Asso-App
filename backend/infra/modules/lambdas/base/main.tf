@@ -33,6 +33,7 @@ resource "aws_lambda_function" "lambda" {
       JWT_SECRET = var.JWT_SECRET
     }
   }
+  timeout = 30
 }
 
 

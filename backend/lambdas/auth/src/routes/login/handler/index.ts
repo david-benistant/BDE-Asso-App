@@ -1,45 +1,58 @@
-import { Handler } from "aws-lambda"
-import AzureService from "../../../services/graph.service"
-import propertiesService from "../../../services/properties.service"
-import ApiError, { ApiErrorStatus } from "../../../services/errors.service"
-import TokensService from "../../../services/tokens.service"
-import UserRepository from "../../../repositories/users.repository"
-import UserValueObject from "../../../valueObjects/users.valueObject"
+import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
+import graphService from "../../../services/graph.service";
+import propertiesService from "../../../services/properties.service";
+import ApiError, { ApiErrorStatus } from "../../../services/errors.service";
+import TokensService from "../../../services/tokens.service";
+import UserRepository from "../../../repositories/users.repository";
+import UserValueObject from "../../../valueObjects/users.valueObject";
+import s3Service from "../../../services/s3.service";
+import { type TResponse } from "../schema";
+import errorHandlerMiddleware from "../../../middlewares/errorHandler";
+import middy from "@middy/core";
+import apiGatewayService from "../../../services/api-gateway.service";
 
-process.on("unhandledRejection", (reason) => {
-  console.error("UNHANDLED REJECTION:", reason)
-})
+export const baseHandler: Handler = async (event: APIGatewayProxyEventV2) => {
+    const AzureAccessToken = event.headers?.authorization
+        ?.replace("Bearer ", "")
+        .replace("Token ", "");
 
-process.on("uncaughtException", (err) => {
-  console.error("UNCAUGHT EXCEPTION:", err)
-})
+    if (!AzureAccessToken) {
+        throw new ApiError(401, ApiErrorStatus.UNAUTHORIZED, "No access token");
+    }
 
-export const handler: Handler = async (event) => {
+    const me = await graphService.getMe(AzureAccessToken);
 
-  const AzureAccessToken = event.headers.authorization.replace("Bearer ", "").replace("Token ", "")
+    const decodeAzureToken = TokensService.decodeAzureToken(AzureAccessToken);
 
-  const me = await AzureService.getMe(AzureAccessToken)
+    if (decodeAzureToken.appid !== propertiesService.getAzureClientId()) {
+        throw new ApiError(
+            401,
+            ApiErrorStatus.UNAUTHORIZED,
+            "Invalid Azure access token",
+        );
+    }
 
-  const decodeAzureToken = TokensService.decodeAzureToken(AzureAccessToken)
+    let user = await UserRepository.getNotThrow(decodeAzureToken.oid);
 
-  if (decodeAzureToken.appid !== propertiesService.getAzureClientId()) {
-    throw new ApiError(401, ApiErrorStatus.UNAUTHORIZED, "Invalid Azure access token")
-  }
+    if (!user) {
+        user = new UserValueObject({
+            id: me.id,
+            email: me.mail,
+            displayName: me.displayName,
+            name: me.displayName.toLowerCase(),
+        });
+        await UserRepository.putUser(user);
+        const photo = await graphService.getMePhoto(AzureAccessToken);
+        await s3Service.putObject(
+            propertiesService.getPhotoBucket(),
+            me.id,
+            photo,
+        );
+    }
 
-  let userDomain = await UserRepository.getUserNoThrow(me.id)
+    const accessToken = TokensService.generateAccessToken(user);
 
-  let user;
-  if (userDomain) {
-    user = new UserValueObject(userDomain)
-  } else {
-    user = new UserValueObject({id: me.id, email: me.mail, displayName: me.displayName})
-    await UserRepository.putUser(user);
-  }
-  
-  const accessToken = TokensService.generateAccessToken(user);
+    return apiGatewayService.response<TResponse>(200, { accessToken });
+};
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ accessToken })
-  }
-}
+export const handler = middy(baseHandler).use(errorHandlerMiddleware());

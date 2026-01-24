@@ -7,11 +7,6 @@ module "deploy_auth" {
       method = "POST"
       route  = "/auth/login"
     }
-    revoke = {
-      path   = "../lambdas/auth/src/routes/revoke"
-      method = "GET"
-      route  = "/auth/revoke"
-    }
   }
 
   source = "./base"

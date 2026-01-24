@@ -12,10 +12,16 @@ provider "aws" {
   region = "eu-west-3"
 }
 
+module "s3" {
+  source = "./modules/s3"
+  STAGE = var.STAGE
+  PHOTOS_BUCKET = var.PHOTOS_BUCKET
+}
 module "dynamo-db" {
   source = "./modules/dynamo-db"
   STAGE = var.STAGE
   USERS_TABLE = var.USERS_TABLE
+  CLUBS_TABLE = var.CLUBS_TABLE
 }
 
 module "api-gateway" {

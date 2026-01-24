@@ -32,6 +32,19 @@ resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
           "dynamodb:DeleteItem"
         ]
         Resource = "arn:aws:dynamodb:eu-west-3:${var.AWS_ACCOUNT_ID}:table/*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::*",
+          "arn:aws:s3:::*/*"
+        ]
       }
     ]
   })

@@ -5,7 +5,7 @@ module "deploy_users" {
     get = {
       path   = "../lambdas/users/src/routes/get"
       method = "GET"
-      route  = "/users"
+      route  = "/users/{id}"
     }
   }
 

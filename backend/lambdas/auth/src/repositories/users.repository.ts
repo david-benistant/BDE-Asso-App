@@ -1,51 +1,57 @@
-import propertiesService from "../services/properties.service"
-import dynamoService from "../services/dynamo.service"
-import UserValueObject, { userValueObjectProps } from "../valueObjects/users.valueObject"
-import ApiError, { ApiErrorStatus } from "../services/errors.service"
+import propertiesService from "../services/properties.service";
+import dynamoService from "../services/dynamo.service";
+import UserValueObject, {
+    userValueObjectProps,
+} from "../valueObjects/users.valueObject";
+import ApiError, { ApiErrorStatus } from "../services/errors.service";
 
 class UserRepository {
-    private name = propertiesService.getUserTable()
+    private name = propertiesService.getUserTable();
 
-    public async getUser (id: string): Promise<userValueObjectProps> {
+    public async get(id: string): Promise<UserValueObject> {
         try {
             const result = await dynamoService.get<userValueObjectProps>({
                 TableName: this.name,
-                Key : {
-                    id
-                }
-            })
+                Key: {
+                    id,
+                },
+            });
 
-            return result;
+            return new UserValueObject(result);
         } catch (e) {
             if (e instanceof ApiError) {
-                throw e
+                throw e;
             } else {
-                throw new ApiError(500, ApiErrorStatus.INTERNAL_SERVER_ERROR, JSON.stringify(e))
+                throw new ApiError(
+                    500,
+                    ApiErrorStatus.INTERNAL_SERVER_ERROR,
+                    JSON.stringify(e),
+                );
             }
         }
     }
 
-    public async getUserNoThrow (id: string): Promise<userValueObjectProps | undefined> {
+    public async getNotThrow(id: string): Promise<UserValueObject | undefined> {
         try {
             const result = await dynamoService.get<userValueObjectProps>({
                 TableName: this.name,
-                Key : {
-                    id
-                }
-            })
+                Key: {
+                    id,
+                },
+            });
 
-            return result;
+            return new UserValueObject(result);
         } catch (e) {
-            return undefined
+            return undefined;
         }
     }
 
     public async putUser(user: UserValueObject) {
         await dynamoService.put({
             TableName: this.name,
-            Item: user.getObject()
-        })
+            Item: user.getObject(),
+        });
     }
 }
 
-export default new UserRepository()
+export default new UserRepository();

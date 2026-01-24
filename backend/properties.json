@@ -2,5 +2,7 @@
     "STAGE": "prod",
     "AZURE_CLIENT_ID": "25962da1-190d-479b-889f-d47b6c92c3af",
     "USERS_TABLE": "asso-app-users",
-    "AWS_ACCOUNT_ID" : "892091699078"
+    "PHOTOS_BUCKET": "asso-app-photos",
+    "AWS_ACCOUNT_ID" : "892091699078",
+    "CLUBS_TABLE": "asso-app-clubs"
 }
