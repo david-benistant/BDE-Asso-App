@@ -7,9 +7,10 @@ import type mePhotoValueObject from "@valueObjects/me/photo/mePhoto.valueObject"
 type TopBarProps = {
     onSearch?: (value: string) => void;
     setSideBarOpen: (value: boolean) => void
+    customButton?: { text: string, icon: React.ReactNode, onClick: () => void }
 };
 
-export default function TopBar({ onSearch, setSideBarOpen }: TopBarProps) {
+export default function TopBar({ onSearch, setSideBarOpen, customButton }: TopBarProps) {
     const [search, setSearch] = useState("");
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const buttonRef = useRef<HTMLDivElement>(null);
@@ -77,6 +78,24 @@ export default function TopBar({ onSearch, setSideBarOpen }: TopBarProps) {
                         >
                             <path d="M21 21l-4.3-4.3m1.3-5.7a7 7 0 1 1-14 0a7 7 0 0 1 14 0" />
                         </svg>
+                    </button>
+                )}
+
+                {customButton && (
+                    <button
+                        onClick={customButton.onClick}
+                        className="cursor-pointer hidden md:flex h-9 ml-4 p-4 items-center rounded-md justify-center bg-white/15 hover:bg-white/25 text-white"
+                    >
+                        {customButton.text}
+                    </button>
+                )}
+
+                {customButton && (
+                    <button
+                        onClick={customButton.onClick}
+                        className="cursor-pointer md:hidden w-9 h-9 ml-4 flex items-center rounded-full justify-center bg-white/15 hover:bg-white/25 text-white"
+                    >
+                        {customButton.icon}
                     </button>
                 )}
 

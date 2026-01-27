@@ -1,5 +1,5 @@
 class ApiGatewayService {
-    response<T>(status: number, body: T) {
+    response<T>(status: number, body?: T) {
         return {
             statusCode: status,
             headers: {

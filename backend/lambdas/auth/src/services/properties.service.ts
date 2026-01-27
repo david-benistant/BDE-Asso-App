@@ -4,13 +4,13 @@ class PropertiesService {
     private STAGE: string;
     private AZURE_CLIENT_ID: string;
     private USERS_TABLE: string;
-    private PHOTOS_BUCKET: string;
+    private PROFILES_BUCKET: string;
 
     constructor() {
         this.STAGE = properties.STAGE;
         this.USERS_TABLE = `${properties.USERS_TABLE}-${this.STAGE}`;
         this.AZURE_CLIENT_ID = properties.AZURE_CLIENT_ID;
-        this.PHOTOS_BUCKET = `${properties.PHOTOS_BUCKET}-${this.STAGE}`;
+        this.PROFILES_BUCKET = `${properties.PROFILES_BUCKET}-${this.STAGE}`;
     }
 
     getStage() {
@@ -25,8 +25,8 @@ class PropertiesService {
         return this.USERS_TABLE;
     }
 
-    getPhotoBucket() {
-        return this.PHOTOS_BUCKET;
+    getProfileBucket() {
+        return this.PROFILES_BUCKET;
     }
 }
 

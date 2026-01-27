@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import envService from "./env.service";
-import { userValueObjectProps } from "../valueObjects/users.valueObject";
+import { userValueObjectProps } from "@valueObjects/users.valueObject";
 import ApiError, { ApiErrorStatus } from "./errors.service";
 
 class TokensService {

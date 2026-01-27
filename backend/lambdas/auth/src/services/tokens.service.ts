@@ -1,7 +1,7 @@
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import UserValueObject, {
     userValueObjectProps,
-} from "../valueObjects/users.valueObject";
+} from "@valueObjects/users.valueObject";
 import jwt from "jsonwebtoken";
 import envService from "./env.service";
 import ApiError, { ApiErrorStatus } from "./errors.service";

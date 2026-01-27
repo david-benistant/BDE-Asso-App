@@ -1,19 +1,14 @@
-import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
+import { Handler } from "aws-lambda";
 import middy from "@middy/core";
-import httpJsonBodyParser from "@middy/http-json-body-parser";
-import httpErrorHandler from "@middy/http-error-handler";
-import httpCors from "@middy/http-cors";
-
-import ClubValueObject from "../../../valueObjects/club.valueObject";
+import ClubValueObject from "@valueObjects/club.valueObject";
 import { v4 } from "uuid";
-import clubRepository from "../../../repositories/club.repository";
-import authMiddleware, { CustomContext } from "../../../middlewares/auth";
+import clubRepository from "@repositories/club.repository";
+import authMiddleware, { CustomContext } from "@middlewares/auth";
 import { TBody, TResponse, bodySchema } from "../schema";
-import { TypedAPIGatewayEvent } from "../../../entities/apiGateway";
-import apiGatewayService from "../../../services/api-gateway.service";
-import errorHandlerMiddleware from "../../../middlewares/errorHandler";
-import ApiError, { ApiErrorStatus } from "../../../services/errors.service";
-import schemaValidatorMiddleware from "../../../middlewares/schema-validator";
+import { TypedAPIGatewayEvent } from "@entities/apiGateway";
+import apiGatewayService from "@services/api-gateway.service";
+import errorHandlerMiddleware from "@middlewares/errorHandler";
+import schemaValidatorMiddleware from "@middlewares/schema-validator";
 
 const baseHandler: Handler = async (
     event: TypedAPIGatewayEvent<TBody>,
@@ -33,7 +28,7 @@ const baseHandler: Handler = async (
         nbFollowers: 0,
     });
 
-    await clubRepository.post(object);
+    await clubRepository.put(object);
 
     return apiGatewayService.response<TResponse>(201, object.getObject());
 };

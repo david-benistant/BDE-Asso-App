@@ -6,7 +6,7 @@ export interface userValueObjectProps {
 
 }
 
-export default class {
+export default class UserValueObject {
     private displayName: string;
     private email: string;
     private id: string;

@@ -21,12 +21,16 @@ abstract class ApiProvider {
             ...options,
             headers: {
                 ...(options.headers || {}),
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token.getValue()}`,
             },
         });
 
         if (!res.ok) {
             return Result.fail<T>("Failed to fetch");
+        }
+
+        if (res.status === 204){
+            return Result.ok<T>()
         }
         return Result.ok<T>(await res.json());
     }

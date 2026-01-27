@@ -1,11 +1,11 @@
 import { Handler } from "aws-lambda";
-import usersRepository from "../../../repositories/users.repository";
+import usersRepository from "@repositories/users.repository";
 import middy from "@middy/core";
-import authMiddleware from "../../../middlewares/auth";
-import errorHandlerMiddleware from "../../../middlewares/errorHandler";
+import authMiddleware from "@middlewares/auth";
+import errorHandlerMiddleware from "@middlewares/errorHandler";
 import { TPathParams } from "../schema";
-import { TypedAPIGatewayEvent } from "../../../entities/apiGateway";
-import apiGatewayService from "../../../services/api-gateway.service";
+import { TypedAPIGatewayEvent } from "@entities/apiGateway";
+import apiGatewayService from "@services/api-gateway.service";
 
 export const baseHandler: Handler = async (
     event: TypedAPIGatewayEvent<{}, TPathParams>,

@@ -11,7 +11,7 @@ export interface meInfosValueObjectProps {
     id: string;
 }
 
-export default class meInfosValueObject {
+export default class MeInfosValueObject {
     private displayName: string;
     private givenName: string;
     private jobTitle: string;

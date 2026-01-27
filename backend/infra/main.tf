@@ -15,7 +15,8 @@ provider "aws" {
 module "s3" {
   source = "./modules/s3"
   STAGE = var.STAGE
-  PHOTOS_BUCKET = var.PHOTOS_BUCKET
+  PROFILES_BUCKET = var.PROFILES_BUCKET
+  PICTURES_BUCKET = var.PICTURES_BUCKET
 }
 module "dynamo-db" {
   source = "./modules/dynamo-db"

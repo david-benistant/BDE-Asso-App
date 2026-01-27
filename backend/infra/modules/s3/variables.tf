@@ -2,6 +2,7 @@ variable "STAGE" {
   type = string
 }
 
-variable "PHOTOS_BUCKET" {
+variable "PROFILES_BUCKET" {
   type = string
 }
+variable "PICTURES_BUCKET" { type = string }

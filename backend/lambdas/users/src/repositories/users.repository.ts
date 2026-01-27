@@ -1,9 +1,9 @@
-import propertiesService from "../services/properties.service";
-import dynamoService from "../services/dynamo.service";
+import propertiesService from "@services/properties.service";
+import dynamoService from "@services/dynamo.service";
 import UserValueObject, {
     userValueObjectProps,
-} from "../valueObjects/users.valueObject";
-import ApiError, { ApiErrorStatus } from "../services/errors.service";
+} from "@valueObjects/users.valueObject";
+import ApiError, { ApiErrorStatus } from "@services/errors.service";
 
 class UserRepository {
     private name = propertiesService.getUserTable();

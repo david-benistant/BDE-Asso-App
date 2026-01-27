@@ -1,5 +1,5 @@
 import userValueObject from "@valueObjects/users/user.valueObject";
-import ApiProvider from "../../ApiProvider";
+import ApiProvider from "@repositories/api/ApiProvider";
 import type { userValueObjectProps } from "@valueObjects/users/user.valueObject";
 import { Result } from "@utils/Result";
 

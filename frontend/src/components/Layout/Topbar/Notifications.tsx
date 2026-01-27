@@ -44,7 +44,7 @@ export default function NotificationPopover() {
           setOpen(v => !v)
           setHasNotification(false)
         }}
-        className="relative w-9 h-9 ml-3 flex items-center justify-center rounded-full bg-white/15 hover:bg-white/25 text-white"
+        className="cursor-pointer relative w-9 h-9 ml-3 flex items-center justify-center rounded-full bg-white/15 hover:bg-white/25 text-white"
       >
         {hasNotification && (
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />

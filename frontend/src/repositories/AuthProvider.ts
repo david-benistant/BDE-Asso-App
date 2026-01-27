@@ -72,7 +72,6 @@ class AuthProvider {
             scopes: ["User.Read"],
         });
 
-        console.log(token.accessToken);
         return token.accessToken;
     }
 

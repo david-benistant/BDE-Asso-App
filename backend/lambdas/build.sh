@@ -1,8 +1,8 @@
 #!/bin/bash
 
-for dir in ./*/src/routes/*/; do
-  if [ -f "$dir/package.json" ]; then
+for dir in ./*/; do
+  if [ -f "$dir/build.js" ]; then
     echo "Installing in $dir"
-    (cd "$dir" && npm run build)
+    (cd "$dir" && node build.js)
   fi
 done

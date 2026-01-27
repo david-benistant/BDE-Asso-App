@@ -7,4 +7,5 @@ variable "AWS_ACCOUNT_ID" {
 variable "USERS_TABLE" { type = string }
 variable "CLUBS_TABLE" { type = string }
 
-variable "PHOTOS_BUCKET" { type = string }
+variable "PROFILES_BUCKET" { type = string }
+variable "PICTURES_BUCKET" { type = string }

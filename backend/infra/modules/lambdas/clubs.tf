@@ -7,6 +7,40 @@ module "deploy_clubs" {
       method = "POST"
       route  = "/clubs"
     }
+    get = {
+      path   = "../lambdas/clubs/src/routes/get"
+      method = "GET"
+      route  = "/clubs/{id}"
+    }
+    list = {
+      path   = "../lambdas/clubs/src/routes/list"
+      method = "GET"
+      route  = "/clubs"
+    }
+
+    put = {
+      path   = "../lambdas/clubs/src/routes/put"
+      method = "PUT"
+      route  = "/clubs/{id}"
+    }
+
+    put-thumbnail = {
+      path   = "../lambdas/clubs/src/routes/put-thumbnail"
+      method = "PUT"
+      route  = "/clubs/{id}/thumbnail"
+    }
+
+    put-picutres = {
+      path   = "../lambdas/clubs/src/routes/put-pictures"
+      method = "PUT"
+      route  = "/clubs/{id}/pictures"
+    }
+
+    delete-picutres = {
+      path   = "../lambdas/clubs/src/routes/delete-pictures"
+      method = "PUT"
+      route  = "/clubs/{id}/pictures/delete"
+    }
   }
 
   source = "./base"

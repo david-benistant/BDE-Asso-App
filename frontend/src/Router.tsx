@@ -16,11 +16,11 @@ export const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: 'club/:clubId',
+        path: 'club/:id',
         element: <Club />,
       },
       {
-        path: 'club/:clubId/settings',
+        path: 'club/:id/settings',
         element: <ClubSettings />,
       },
     ],

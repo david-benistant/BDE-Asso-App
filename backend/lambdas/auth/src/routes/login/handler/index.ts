@@ -1,15 +1,15 @@
 import { APIGatewayProxyEventV2, Handler } from "aws-lambda";
-import graphService from "../../../services/graph.service";
-import propertiesService from "../../../services/properties.service";
-import ApiError, { ApiErrorStatus } from "../../../services/errors.service";
-import TokensService from "../../../services/tokens.service";
-import UserRepository from "../../../repositories/users.repository";
-import UserValueObject from "../../../valueObjects/users.valueObject";
-import s3Service from "../../../services/s3.service";
+import graphService from "@services/graph.service";
+import propertiesService from "@services/properties.service";
+import ApiError, { ApiErrorStatus } from "@services/errors.service";
+import TokensService from "@services/tokens.service";
+import UserRepository from "@repositories/users.repository";
+import UserValueObject from "@valueObjects/users.valueObject";
+import s3Service from "@services/s3.service";
 import { type TResponse } from "../schema";
-import errorHandlerMiddleware from "../../../middlewares/errorHandler";
+import errorHandlerMiddleware from "@middlewares/errorHandler";
 import middy from "@middy/core";
-import apiGatewayService from "../../../services/api-gateway.service";
+import apiGatewayService from "@services/api-gateway.service";
 
 export const baseHandler: Handler = async (event: APIGatewayProxyEventV2) => {
     const AzureAccessToken = event.headers?.authorization
@@ -44,7 +44,7 @@ export const baseHandler: Handler = async (event: APIGatewayProxyEventV2) => {
         await UserRepository.putUser(user);
         const photo = await graphService.getMePhoto(AzureAccessToken);
         await s3Service.putObject(
-            propertiesService.getPhotoBucket(),
+            propertiesService.getProfileBucket(),
             me.id,
             photo,
         );

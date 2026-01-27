@@ -2,7 +2,7 @@ import { useState, type JSX } from "react";
 import Sidebar from "./SideBar/Sidebar";
 import TopBar from "./Topbar/TopBar";
 
-const Layout = ({ children, onSearch }: { children: JSX.Element, onSearch?: (value: string) => void; }) => {
+const Layout = ({ children, onSearch, customButton }: { children: JSX.Element, onSearch?: (value: string) => void; customButton?: { text: string, icon: React.ReactNode, onClick: () => void } }) => {
     const [sideBarOpen, setSideBarOpen] = useState(false);
 
     return (
@@ -21,11 +21,11 @@ const Layout = ({ children, onSearch }: { children: JSX.Element, onSearch?: (val
                     </div>
                 </div>
             </div>
-            <TopBar setSideBarOpen={setSideBarOpen} onSearch={onSearch} />
+            <TopBar setSideBarOpen={setSideBarOpen} onSearch={onSearch} customButton={customButton} />
             {sideBarOpen && (
                 <div
                     onClick={() => setSideBarOpen(false)}
-                    className="fixed inset-0 md:hidden"
+                    className="fixed left-40 inset-0 md:hidden"
                 />
             )}
         </div>

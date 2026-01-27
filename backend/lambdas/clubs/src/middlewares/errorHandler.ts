@@ -1,6 +1,6 @@
 import { MiddlewareObj } from "@middy/core";
-import ApiError, { ApiErrorStatus } from "../services/errors.service";
-import apiGatewayService from "../services/api-gateway.service";
+import ApiError, { ApiErrorStatus } from "@services/errors.service";
+import apiGatewayService from "@services/api-gateway.service";
 
 const errorHandlerMiddleware = (): MiddlewareObj => ({
     onError: async (request) => {
@@ -13,7 +13,7 @@ const errorHandlerMiddleware = (): MiddlewareObj => ({
         if (error instanceof ApiError) {
             httpStatus = error.httpStatus;
             message = error.message;
-            error.code = error.code;
+            code = error.code;
         }
 
         const response = apiGatewayService.response(httpStatus, {
@@ -21,6 +21,8 @@ const errorHandlerMiddleware = (): MiddlewareObj => ({
             error: message,
             code,
         });
+
+        console.error(error)
 
         request.response = response;
     },

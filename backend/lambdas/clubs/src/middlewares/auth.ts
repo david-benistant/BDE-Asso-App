@@ -1,9 +1,9 @@
 import { MiddlewareObj, Request } from "@middy/core";
 import { APIGatewayProxyEventV2, Context } from "aws-lambda";
-import ApiError, { ApiErrorStatus } from "../services/errors.service";
-import tokensService from "../services/tokens.service";
+import ApiError, { ApiErrorStatus } from "@services/errors.service";
+import tokensService from "@services/tokens.service";
 import { JwtPayload } from "jsonwebtoken";
-import { userValueObjectProps } from "../valueObjects/users.valueObject";
+import { userValueObjectProps } from "@valueObjects/users.valueObject";
 
 export interface CustomContext extends Context {
     tokenPayload?: JwtPayload & userValueObjectProps;

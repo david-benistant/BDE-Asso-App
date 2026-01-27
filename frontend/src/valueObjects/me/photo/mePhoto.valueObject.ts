@@ -2,7 +2,7 @@ export interface mePhotoValueObjectProps {
     url: string;
 }
 
-export default class mePhotoValueObject {
+export default class MePhotoValueObject {
     private url: string;
 
     constructor(props: mePhotoValueObjectProps) {

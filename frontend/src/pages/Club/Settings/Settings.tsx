@@ -1,152 +1,348 @@
 import Layout from "@components/Layout/Layout";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import MembersModal from "./MembersModal";
-
-const clubMock = {
-    id: 6,
-    name: "Club Photo",
-    president: {
-        name: "Alex Martin",
-        id: "cba23394-e5db-48be-a1c6-0beaa6147b43",
-        avatar: "https://images.unsplash.com/photo-1502685104226-ee32379fefbe",
-    },
-    thumbnail: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32",
-    pictures: [
-        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32",
-        "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-    ],
-    members: ["cba23394-e5db-48be-a1c6-0beaa6147b43"],
-    nbFollowers: 45,
-    description: `
-## 📸 À propos du club
-
-Le **Club Photo** est ouvert à tous les passionnés, débutants comme confirmés.
-
-### Ce que nous faisons
-- Sorties photo en extérieur
-- Ateliers techniques
-- Retouche photo
-- Expositions
-
-> Venez avec votre créativité, on s'occupe du reste.
-`,
-};
+import { XMarkIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { useNavigate, useParams } from "react-router-dom";
+import { useToast } from "@contexts/ToastContext";
+import ClubValueObject from "@valueObjects/clubs/club.valueObject";
+import clubRepository from "@repositories/api/clubs/:id/handlers";
+import clubThumbnailRepository from "@repositories/api/clubs/:id/thumbnail/handlers";
+import clubPicturesDeleteRepository from "@repositories/api/clubs/:id/pictures/delete/handlers";
+import clubPicturesRepository from "@repositories/api/clubs/:id/pictures/handlers";
+import { Spinner } from "@components/Spinner/Spinner";
+import UploadPictureModal from "./UploadPictureModal";
+// import profileCDN from "@repositories/cdn/profile.cdn";
+import picturesCdn from "@repositories/cdn/pictures.cdn";
 
 export const ClubSettings: React.FC = () => {
-    const [club, setClub] = useState(clubMock);
     const [showMembersModal, setShowMembersModal] = useState(false);
+    const nameInput = useRef<HTMLInputElement | null>(null);
+    const descripitonInput = useRef<HTMLTextAreaElement | null>(null);
+    const [clubBase, setClubBase] = useState<ClubValueObject | undefined>();
+    const [club, setClub] = useState<ClubValueObject | undefined>();
+    const { id } = useParams<{ id: string }>();
+    const { toast } = useToast();
+    const [uploadThumbnailModal, setUploadThumbnailModal] =
+        useState<boolean>(false);
+    const [uploadPicturesModal, setUploadPicturesModal] =
+        useState<boolean>(false);
 
-    const updateField = (field: keyof typeof club, value: any) => {
-        setClub((prev) => ({ ...prev, [field]: value }));
+    const [newThumbnail, setNewThumbnail] = useState<ArrayBuffer | undefined>();
+
+    const [newPictures, setNewPictures] = useState<ArrayBuffer[]>([]);
+    const [deletedPictures, setDeletedPicture] = useState<string[]>([]);
+    const [saving, setSaving] = useState<boolean>(false);
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const getUser = async () => {
+            if (!id) return;
+            const clubRepo = new clubRepository(id);
+
+            const response = await clubRepo.get();
+
+            if (response.isFailure) {
+                return toast("Failed to get club", "error");
+            }
+            const clubValue = response.getValue();
+            setClub(clubValue);
+            setClubBase(clubValue);
+        };
+        getUser();
+    }, [id]);
+
+    if (!club) {
+        return (
+            <Layout>
+                <div className="md:w-full w-screen pt-50">
+                    <Spinner />
+                </div>
+            </Layout>
+        );
+    }
+
+    const isThumbnail = () => {
+        if (newThumbnail || club.getThumbnail().length > 0) return true;
+        return false;
+    };
+    const getThumbnail = () => {
+        if (newThumbnail) {
+            const blob = new Blob([newThumbnail], { type: "image/png" });
+            return URL.createObjectURL(blob);
+        }
+        if (club.getThumbnail().length > 0) {
+            return picturesCdn.get(club.getThumbnail());
+        }
     };
 
-    const updatePicture = (index: number, value: string) => {
-        const newPictures = [...club.pictures];
-        newPictures[index] = value;
-        updateField("pictures", newPictures);
+    const onValidateThumbnailModal = (images: ArrayBuffer[]) => {
+        setNewThumbnail(images[0]);
+        setUploadThumbnailModal(false);
     };
 
-    const addPicture = () => updateField("pictures", [...club.pictures, ""]);
-
-    const removePicture = (index: number) => {
-        const newPictures = club.pictures.filter((_, i) => i !== index);
-        updateField("pictures", newPictures);
+    const onValidatePicturesModal = (images: ArrayBuffer[]) => {
+        setNewPictures([...newPictures, ...images]);
+        setUploadPicturesModal(false);
     };
 
+    const getNewPicturesUrls = () => {
+        return newPictures.map((picture) => {
+            const blob = new Blob([picture], { type: "image/png" });
+            return URL.createObjectURL(blob);
+        });
+    };
+
+    const save = async () => {
+        if (!id) return;
+        setSaving(true);
+        const clubRepo = new clubRepository(id);
+
+        const updateResponse = await clubRepo.put({
+            displayName: club.getDisplayName(),
+            description: club.getDescription(),
+        });
+
+        if (updateResponse.isFailure) {
+            setSaving(false);
+            return toast(updateResponse.getError(), "error");
+        }
+
+        if (newThumbnail) {
+            const clubThumbnailRepo = new clubThumbnailRepository(id);
+            const updateThumbnailResponse =
+                await clubThumbnailRepo.put(newThumbnail);
+
+            if (updateThumbnailResponse.isFailure) {
+                setSaving(false);
+                return toast(updateThumbnailResponse.getError(), "error");
+            }
+        }
+
+        if (deletedPictures.length > 0) {
+            const clubPicturesDeleteRepo = new clubPicturesDeleteRepository(id);
+            const deletedPicturesResponse =
+                await clubPicturesDeleteRepo.put(deletedPictures);
+            if (deletedPicturesResponse.isFailure) {
+                setSaving(false);
+                return toast(deletedPicturesResponse.getError(), "error");
+            }
+        }
+
+        if (newPictures.length > 0) {
+            const clubPicturesReposito = new clubPicturesRepository(id);
+            const addedPicturesResponse =
+                await clubPicturesReposito.put(newPictures);
+            if (addedPicturesResponse.isFailure) {
+                setSaving(false);
+                return toast(addedPicturesResponse.getError(), "error");
+            }
+        }
+
+        setSaving(false);
+        toast("Club settings updated");
+        navigate(`/club/${id}`)
+    };
 
     return (
         <>
+            { saving && <div className="fixed inset-0 z-50 bg-black/70">
+                <Spinner />
+            </div> }
             {showMembersModal && (
-                <MembersModal setIsOpen={setShowMembersModal} members={clubMock.members} />
+                <MembersModal
+                    setIsOpen={setShowMembersModal}
+                    members={club.getMembers()}
+                />
+            )}
+
+            {uploadThumbnailModal && (
+                <UploadPictureModal
+                    setIsOpen={setUploadThumbnailModal}
+                    title={"Mignature du club"}
+                    max={1}
+                    onValidate={onValidateThumbnailModal}
+                />
+            )}
+
+            {uploadPicturesModal && (
+                <UploadPictureModal
+                    setIsOpen={setUploadPicturesModal}
+                    title={"Photos du club"}
+                    onValidate={onValidatePicturesModal}
+                />
             )}
             <Layout>
-                <div className="max-w-3xl mx-auto p-6 space-y-6">
-                    <div>
+                <div className="p-6 md:w-full w-screen space-y-6">
+                    <div className="md:w-100 ">
                         <label className="block font-semibold">
                             Nom du club
                         </label>
-                        <input
-                            type="text"
-                            value={club.name}
-                            onChange={(e) =>
-                                updateField("name", e.target.value)
-                            }
-                            className="mt-1 block w-full border rounded p-2"
-                        />
+                        <div className="flex w-full">
+                            <input
+                                ref={nameInput}
+                                type="text"
+                                value={club.getDisplayName()}
+                                onChange={(e) => {
+                                    const newClub = new ClubValueObject({
+                                        ...club.getObject(),
+                                        displayName: e.target.value,
+                                    });
+                                    setClub(newClub);
+                                }}
+                                className="flex-grow border rounded-lg p-2"
+                            />
+                        </div>
                     </div>
 
                     <div>
                         <label className="block font-semibold">
                             Description (Markdown)
                         </label>
-                        <textarea
-                            value={club.description}
-                            onChange={(e) =>
-                                updateField("description", e.target.value)
-                            }
-                            rows={10}
-                            className="mt-1 w-full border rounded p-2 font-mono"
-                        />
+                        <div className="flex h-80 md:w-200 mt-1">
+                            <textarea
+                                ref={descripitonInput}
+                                value={club.getDescription()}
+                                onChange={(e) => {
+                                    const newClub = new ClubValueObject({
+                                        ...club.getObject(),
+                                        description: e.target.value,
+                                    });
+                                    setClub(newClub);
+                                }}
+                                rows={10}
+                                className="flex-grow border rounded-lg p-2 font-mono resize-none"
+                            />
+                        </div>
                     </div>
 
                     <div>
-                        <label className="block font-semibold">Thumbnail</label>
-                        <input
-                            type="text"
-                            value={club.thumbnail}
-                            onChange={(e) =>
-                                updateField("thumbnail", e.target.value)
-                            }
-                            className="mt-1 block w-full border rounded p-2"
-                        />
-                        {club.thumbnail && (
-                            <img
-                                src={club.thumbnail}
-                                className="mt-2 w-32 h-32 object-cover rounded"
-                            />
+                        <label className="block font-semibold mb-3">
+                            Mignature du club
+                        </label>
+
+                        {!isThumbnail() && (
+                            <div className="w-32 h-32 flex justify-center items-center">
+                                <div
+                                    onClick={() =>
+                                        setUploadThumbnailModal(true)
+                                    }
+                                    className="cursor-pointer w-17 h-17  bg-gray-200 rounded-full flex justify-center items-center"
+                                >
+                                    <PlusIcon className="h-13 text-white" />
+                                </div>
+                            </div>
+                        )}
+                        {isThumbnail() && (
+                            <div
+                                className="relative w-32 h-32 rounded bg-cover bg-center bg-no-repeat rounded group cursor-pointer"
+                                style={{
+                                    backgroundImage: `url(${getThumbnail()})`,
+                                }}
+                                onClick={() => setUploadThumbnailModal(true)}
+                            >
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300" />
+
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <span className="text-white font-medium">
+                                        Changer
+                                    </span>
+                                </div>
+                            </div>
                         )}
                     </div>
 
                     <div>
-                        <label className="block font-semibold">Pictures</label>
-                        {club.pictures.map((pic, index) => (
-                            <div
-                                key={index}
-                                className="flex items-center space-x-2 mt-2"
-                            >
-                                <input
-                                    type="text"
-                                    value={pic}
-                                    onChange={(e) =>
-                                        updatePicture(index, e.target.value)
-                                    }
-                                    className="flex-1 border rounded p-2"
-                                />
-                                <button
-                                    onClick={() => removePicture(index)}
-                                    className="px-2 py-1 bg-red-500 text-white rounded"
+                        <label className="block font-semibold mb-3">
+                            Photos du club
+                        </label>
+                        <div className="flex flex-wrap gap-4">
+                            {club
+                                .getPictures()
+                                .filter(
+                                    (picture) =>
+                                        !deletedPictures.includes(picture),
+                                )
+                                .map((pic, index) => (
+                                    <div
+                                        key={`${pic}-${index}`}
+                                        style={{
+                                            backgroundImage: `url(${picturesCdn.get(pic)})`,
+                                        }}
+                                        className="w-32 h-32 bg-cover bg-center bg-no-repeat rounded flex"
+                                    >
+                                        <div
+                                            onClick={() =>
+                                                setDeletedPicture([
+                                                    ...deletedPictures,
+                                                    pic,
+                                                ])
+                                            }
+                                        >
+                                            <XMarkIcon className="h-7 text-white cursor-pointer" />
+                                        </div>
+                                    </div>
+                                ))}
+
+                            {getNewPicturesUrls().map((pic, index) => (
+                                <div
+                                    key={index}
+                                    style={{
+                                        backgroundImage: `url(${pic})`,
+                                    }}
+                                    className="w-32 h-32 bg-cover bg-center bg-no-repeat rounded flex"
                                 >
-                                    Supprimer
-                                </button>
+                                    <div
+                                        onClick={() =>
+                                            setNewPictures(
+                                                newPictures.filter(
+                                                    (_, i) => i !== index,
+                                                ),
+                                            )
+                                        }
+                                    >
+                                        <XMarkIcon className="h-7 text-white cursor-pointer" />
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="w-32 h-32 flex justify-center items-center">
+                                <div
+                                    onClick={() => setUploadPicturesModal(true)}
+                                    className="cursor-pointer w-17 h-17  bg-gray-200 rounded-full flex justify-center items-center"
+                                >
+                                    <PlusIcon className="h-13 text-white" />
+                                </div>
                             </div>
-                        ))}
-                        <button
-                            onClick={addPicture}
-                            className="mt-2 px-3 py-1 bg-green-500 text-white rounded"
-                        >
-                            Ajouter une picture
-                        </button>
+                        </div>
                     </div>
 
-                    <div>
+                    {/* <div>
                         <button
                             onClick={() => setShowMembersModal(true)}
-                            className="px-3 py-1 bg-blue-500 text-white rounded"
+                            className="px-3 py-1 bg-gray-800 text-white rounded cursor-pointer"
                         >
-                            Voir les membres ({club.members.length})
+                            Voir les membres ({club.getMembers().length})
+                        </button>
+                    </div> */}
+
+                    <div className="flex mt-10 gap-5">
+                        <button
+                            onClick={() => {
+                                setClub(clubBase);
+                                setNewPictures([]);
+                                setDeletedPicture([]);
+                                setNewThumbnail(undefined);
+                            }}
+                            className="px-3 h-10 w-30 py-1 bg-white text-gray-800 border-2 border-gray-800 rounded cursor-pointer hover:bg-gray-800 hover:text-white transition-all"
+                        >
+                            Réinitialiser
+                        </button>
+                        <button
+                            onClick={save}
+                            className="px-3 h-10 w-30 py-1 bg-gray-800 text-white rounded cursor-pointer"
+                        >
+                            Sauvegarder
                         </button>
                     </div>
-
                 </div>
             </Layout>
         </>

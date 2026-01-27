@@ -5,6 +5,8 @@ import {
     GetCommandInput,
     PutCommand,
     PutCommandInput,
+    ScanCommand,
+    ScanCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 import ApiError, { ApiErrorStatus } from "./errors.service";
 
@@ -27,6 +29,16 @@ class DynamoService {
             await this.docClient.send(new PutCommand(input));
             return input.Item as T;
         } catch {
+            throw new ApiError(500, ApiErrorStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async scan<T>(input: ScanCommandInput): Promise<T[]> {
+        try {
+            const result = await this.docClient.send(new ScanCommand(input));
+            return (result.Items ?? []) as T[];
+        } catch (e) {
+            console.log(e)
             throw new ApiError(500, ApiErrorStatus.INTERNAL_SERVER_ERROR);
         }
     }
