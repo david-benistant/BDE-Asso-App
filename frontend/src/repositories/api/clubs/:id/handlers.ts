@@ -20,7 +20,7 @@ export default class extends ApiProvider {
         return Result.ok<ClubValueObject>(object);
     }
 
-    async put(props: { displayName: string; description: string }): Promise<Result<undefined>> {
+    async put(props: { displayName: string; description: string }): Promise<Result<void>> {
         const response = await this.callApiJson({
             method: "PUT",
             body: JSON.stringify(props)

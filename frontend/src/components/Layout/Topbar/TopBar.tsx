@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import NotificationPopover from "./Notifications";
 import { useToast } from "@contexts/ToastContext";
-import mePhoto from "@repositories/graph/me/photo/mePhoto";
-import type mePhotoValueObject from "@valueObjects/me/photo/mePhoto.valueObject";
+import type MeInfosValueObject from "@valueObjects/me/infos/meInfos.valueObject";
+// import mePhoto from "@repositories/graph/me/photo/mePhoto";
+// import type mePhotoValueObject from "@valueObjects/me/photo/mePhoto.valueObject";
+import meRepository from "@repositories/graph/me/handlers"
+import profileCdn from "@repositories/cdn/profile.cdn";
 
 type TopBarProps = {
     onSearch?: (value: string) => void;
@@ -15,19 +18,19 @@ export default function TopBar({ onSearch, setSideBarOpen, customButton }: TopBa
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
     const buttonRef = useRef<HTMLDivElement>(null);
     const { toast } = useToast();
-    const [mePhotoObject, setMePhotoObject] =
-        useState<mePhotoValueObject | null>(null);
+    const [me, setMe] =
+        useState<MeInfosValueObject | null>(null);
 
     useEffect(() => {
         const fetchPhoto = async () => {
-            const mePhotoCaller = new mePhoto();
+            const meRepo = new meRepository();
 
-            const object = await mePhotoCaller.get();
+            const object = await meRepo.get();
 
             if (object.isFailure) {
                 toast(object.getError(), "error")
             } else {
-                setMePhotoObject(object.getValue())
+                setMe(object.getValue())
             }
         };
 
@@ -102,9 +105,9 @@ export default function TopBar({ onSearch, setSideBarOpen, customButton }: TopBa
                 <NotificationPopover />
 
                 <div className="ml-3 w-9 h-9 rounded-full bg-white/20 overflow-hidden">
-                    { mePhotoObject && 
+                    { me && 
                     
-                    <img src={mePhotoObject.getUrl()} className="w-full h-full object-cover" />
+                    <img src={profileCdn.get(me.getId())} className="w-full h-full object-cover" />
                     }
                 </div>
             </div>

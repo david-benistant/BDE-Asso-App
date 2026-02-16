@@ -3,7 +3,9 @@ import Home from '@pages/Home/Home';
 // import Profile from './components/Profile'
 import NotFound from '@pages/NotFound/NotFound';
 import Club from '@pages/Club/Club'
-import { ClubSettings } from '@pages/Club/Settings/Settings';
+import ClubSettings from '@pages/Club/Settings/Settings';
+import ClubMembers from '@pages/Club/Settings/Members';
+import Calendar from "@pages/Calendar/Calendar"
 
 export const router = createBrowserRouter([
   {
@@ -20,8 +22,20 @@ export const router = createBrowserRouter([
         element: <Club />,
       },
       {
+        path: 'club/:id/event/:eventId',
+        element: <Club />,
+      },
+      {
         path: 'club/:id/settings',
         element: <ClubSettings />,
+      },
+      {
+        path: 'club/:id/members',
+        element: <ClubMembers />,
+      },
+      {
+        path: 'calendar',
+        element: <Calendar />,
       },
     ],
   },

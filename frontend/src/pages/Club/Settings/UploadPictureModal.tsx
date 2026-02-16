@@ -1,23 +1,25 @@
 import React from "react";
 import Modal from "@components/Modal/Modal";
-import ImageDropzone from "@components/ImageDropzone/ImageDropzone";
+import ImageDropzone, {
+    type ImageItem,
+} from "@components/ImageDropzone/ImageDropzone";
 
 type UploadPicturesModalProps = {
     setIsOpen: (value: boolean) => void;
     max?: number;
     title: string;
-    onValidate: (images: ArrayBuffer[]) => void
+    onValidate: (images: ImageItem[]) => void;
 };
 
 const UploadPictureModal: React.FC<UploadPicturesModalProps> = ({
     setIsOpen,
     max,
     title,
-    onValidate
+    onValidate,
 }) => {
     return (
         <Modal setIsOpen={setIsOpen} title={title}>
-            <ImageDropzone onValidate={onValidate} maxImages={max}  />
+            <ImageDropzone onValidate={onValidate} maxImages={max} />
         </Modal>
     );
 };

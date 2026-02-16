@@ -1,10 +1,10 @@
 import { Type, Static } from "@sinclair/typebox";
 
-export const pathPramsSchema = Type.Object({
+export const pathParamsSchema = Type.Object({
     id: Type.String(),
 });
 
-export type TPathParams = Static<typeof pathPramsSchema>;
+export type TPathParams = Static<typeof pathParamsSchema>;
 
 export const responseSchema = Type.Object({
     accessToken: Type.String(),

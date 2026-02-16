@@ -8,58 +8,6 @@ import { useToast } from "@contexts/ToastContext";
 import { Spinner } from "@components/Spinner/Spinner";
 import LogoEpitech from "@assets/LogoEpitech.png"
 import picturesCdn from "@repositories/cdn/pictures.cdn";
-// type Association = {
-//     id: number;
-//     name: string;
-//     image: string;
-//     members: number;
-//     followers: number;
-// };
-
-// const associations: Association[] = [
-//     {
-//         id: 1,
-//         name: "BDE Campus",
-//         image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-//         members: 42,
-//         followers: 320,
-//     },
-//     {
-//         id: 2,
-//         name: "Club Robotique",
-//         image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32    ",
-//         members: 18,
-//         followers: 210,
-//     },
-//     {
-//         id: 3,
-//         name: "Association Sportive",
-//         image: "https://images.unsplash.com/photo-1517649763962-0c623066013b",
-//         members: 65,
-//         followers: 540,
-//     },
-//     {
-//         id: 4,
-//         name: "Club Photo",
-//         image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32",
-//         members: 23,
-//         followers: 180,
-//     },
-//     {
-//         id: 5,
-//         name: "Club Photo",
-//         image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32",
-//         members: 23,
-//         followers: 180,
-//     },
-//     {
-//         id: 6,
-//         name: "Club Photo",
-//         image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32",
-//         members: 23,
-//         followers: 180,
-//     },
-// ];
 
 const Home = () => {
     const navigate = useNavigate();
@@ -123,10 +71,10 @@ const Home = () => {
 
                                     <div className="text-base text-gray-600 flex justify-between">
                                         <span>
-                                            👥 {club.getMembers().length} membres
+                                            👥 {club.getMembers().length} membre{club.getMembers().length > 1 ?  "s" : "" }
                                         </span>
                                         <span>
-                                            ⭐ {club.getNbFollowers()} abonnés
+                                            ⭐ {club.getfollowers().length} abonné{club.getfollowers().length > 1 ?  "s" : "" }
                                         </span>
                                     </div>
                                 </div>

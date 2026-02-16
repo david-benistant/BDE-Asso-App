@@ -7,7 +7,7 @@ import type { clubValueObjectProps } from "@valueObjects/clubs/club.valueObject"
 
 type EventModalProps = {
     setIsOpen: (value: boolean) => void;
-    members: clubValueObjectProps['members'];
+    members: clubValueObjectProps["members"];
 };
 
 const MembersModal: React.FC<EventModalProps> = ({ setIsOpen, members }) => {
@@ -29,6 +29,9 @@ const MembersModal: React.FC<EventModalProps> = ({ setIsOpen, members }) => {
                             id: member.id,
                             email: "not found",
                             displayName: "not found",
+                            followedClubs: [],
+                            joinedClubs: [],
+                            name: "not found"
                         });
                     }
                 }),

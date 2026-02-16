@@ -8,7 +8,7 @@ export default class extends ApiProvider {
         super(`/clubs/${id}/thumbnail`);
     }
 
-    async put(image: ArrayBuffer): Promise<Result<undefined>> {
+    async put(image: ArrayBuffer): Promise<Result<void>> {
         const hash: string = MD5(WordArray.create(image)).toString();
         const response = await this.callApiJson<{ presignedUrl: string }>({
             method: "PUT",

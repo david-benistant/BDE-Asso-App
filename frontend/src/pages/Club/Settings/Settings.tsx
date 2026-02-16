@@ -11,10 +11,11 @@ import clubPicturesDeleteRepository from "@repositories/api/clubs/:id/pictures/d
 import clubPicturesRepository from "@repositories/api/clubs/:id/pictures/handlers";
 import { Spinner } from "@components/Spinner/Spinner";
 import UploadPictureModal from "./UploadPictureModal";
-// import profileCDN from "@repositories/cdn/profile.cdn";
 import picturesCdn from "@repositories/cdn/pictures.cdn";
+import SettingsLayout from "./Layout";
+import type { ImageItem } from "@components/ImageDropzone/ImageDropzone";
 
-export const ClubSettings: React.FC = () => {
+const ClubSettings: React.FC = () => {
     const [showMembersModal, setShowMembersModal] = useState(false);
     const nameInput = useRef<HTMLInputElement | null>(null);
     const descripitonInput = useRef<HTMLTextAreaElement | null>(null);
@@ -32,7 +33,7 @@ export const ClubSettings: React.FC = () => {
     const [newPictures, setNewPictures] = useState<ArrayBuffer[]>([]);
     const [deletedPictures, setDeletedPicture] = useState<string[]>([]);
     const [saving, setSaving] = useState<boolean>(false);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getUser = async () => {
@@ -49,7 +50,7 @@ export const ClubSettings: React.FC = () => {
             setClubBase(clubValue);
         };
         getUser();
-    }, [id]);
+    }, [id, toast]);
 
     if (!club) {
         return (
@@ -75,13 +76,13 @@ export const ClubSettings: React.FC = () => {
         }
     };
 
-    const onValidateThumbnailModal = (images: ArrayBuffer[]) => {
-        setNewThumbnail(images[0]);
+    const onValidateThumbnailModal = (images: ImageItem[]) => {
+        setNewThumbnail(images[0].buffer);
         setUploadThumbnailModal(false);
     };
 
-    const onValidatePicturesModal = (images: ArrayBuffer[]) => {
-        setNewPictures([...newPictures, ...images]);
+    const onValidatePicturesModal = (images: ImageItem[]) => {
+        setNewPictures([...newPictures, ...images.map((img) => img.buffer)]);
         setUploadPicturesModal(false);
     };
 
@@ -140,14 +141,16 @@ export const ClubSettings: React.FC = () => {
 
         setSaving(false);
         toast("Club settings updated");
-        navigate(`/club/${id}`)
+        navigate(`/club/${id}`);
     };
 
     return (
         <>
-            { saving && <div className="fixed inset-0 z-50 bg-black/70">
-                <Spinner />
-            </div> }
+            {saving && (
+                <div className="fixed inset-0 z-50 bg-black/70">
+                    <Spinner />
+                </div>
+            )}
             {showMembersModal && (
                 <MembersModal
                     setIsOpen={setShowMembersModal}
@@ -158,7 +161,7 @@ export const ClubSettings: React.FC = () => {
             {uploadThumbnailModal && (
                 <UploadPictureModal
                     setIsOpen={setUploadThumbnailModal}
-                    title={"Mignature du club"}
+                    title={"Miniature du club"}
                     max={1}
                     onValidate={onValidateThumbnailModal}
                 />
@@ -172,150 +175,155 @@ export const ClubSettings: React.FC = () => {
                 />
             )}
             <Layout>
-                <div className="p-6 md:w-full w-screen space-y-6">
-                    <div className="md:w-100 ">
-                        <label className="block font-semibold">
-                            Nom du club
-                        </label>
-                        <div className="flex w-full">
-                            <input
-                                ref={nameInput}
-                                type="text"
-                                value={club.getDisplayName()}
-                                onChange={(e) => {
-                                    const newClub = new ClubValueObject({
-                                        ...club.getObject(),
-                                        displayName: e.target.value,
-                                    });
-                                    setClub(newClub);
-                                }}
-                                className="flex-grow border rounded-lg p-2"
-                            />
+                <SettingsLayout>
+                    <div className="p-6 md:w-full w-screen space-y-6">
+                        <div className="md:w-100 ">
+                            <label className="block font-semibold">
+                                Nom du club
+                            </label>
+                            <div className="flex w-full">
+                                <input
+                                    ref={nameInput}
+                                    type="text"
+                                    value={club.getDisplayName()}
+                                    onChange={(e) => {
+                                        const newClub = new ClubValueObject({
+                                            ...club.getObject(),
+                                            displayName: e.target.value,
+                                        });
+                                        setClub(newClub);
+                                    }}
+                                    className="flex-grow border rounded-lg p-2"
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <label className="block font-semibold">
-                            Description (Markdown)
-                        </label>
-                        <div className="flex h-80 md:w-200 mt-1">
-                            <textarea
-                                ref={descripitonInput}
-                                value={club.getDescription()}
-                                onChange={(e) => {
-                                    const newClub = new ClubValueObject({
-                                        ...club.getObject(),
-                                        description: e.target.value,
-                                    });
-                                    setClub(newClub);
-                                }}
-                                rows={10}
-                                className="flex-grow border rounded-lg p-2 font-mono resize-none"
-                            />
+                        <div>
+                            <label className="block font-semibold">
+                                Description (Markdown)
+                            </label>
+                            <div className="flex h-80 md:w-200 mt-1">
+                                <textarea
+                                    ref={descripitonInput}
+                                    value={club.getDescription()}
+                                    onChange={(e) => {
+                                        const newClub = new ClubValueObject({
+                                            ...club.getObject(),
+                                            description: e.target.value,
+                                        });
+                                        setClub(newClub);
+                                    }}
+                                    rows={10}
+                                    className="flex-grow border rounded-lg p-2 font-mono resize-none"
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <label className="block font-semibold mb-3">
-                            Mignature du club
-                        </label>
+                        <div>
+                            <label className="block font-semibold mb-3">
+                                Miniature du club
+                            </label>
 
-                        {!isThumbnail() && (
-                            <div className="w-32 h-32 flex justify-center items-center">
+                            {!isThumbnail() && (
+                                <div className="w-32 h-32 flex justify-center items-center">
+                                    <div
+                                        onClick={() =>
+                                            setUploadThumbnailModal(true)
+                                        }
+                                        className="cursor-pointer w-17 h-17  bg-gray-200 rounded-full flex justify-center items-center"
+                                    >
+                                        <PlusIcon className="h-13 text-white" />
+                                    </div>
+                                </div>
+                            )}
+                            {isThumbnail() && (
                                 <div
+                                    className="relative w-32 h-32 rounded bg-cover bg-center bg-no-repeat rounded group cursor-pointer"
+                                    style={{
+                                        backgroundImage: `url(${getThumbnail()})`,
+                                    }}
                                     onClick={() =>
                                         setUploadThumbnailModal(true)
                                     }
-                                    className="cursor-pointer w-17 h-17  bg-gray-200 rounded-full flex justify-center items-center"
                                 >
-                                    <PlusIcon className="h-13 text-white" />
-                                </div>
-                            </div>
-                        )}
-                        {isThumbnail() && (
-                            <div
-                                className="relative w-32 h-32 rounded bg-cover bg-center bg-no-repeat rounded group cursor-pointer"
-                                style={{
-                                    backgroundImage: `url(${getThumbnail()})`,
-                                }}
-                                onClick={() => setUploadThumbnailModal(true)}
-                            >
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300" />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-300" />
 
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <span className="text-white font-medium">
-                                        Changer
-                                    </span>
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <span className="text-white font-medium">
+                                            Changer
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </div>
 
-                    <div>
-                        <label className="block font-semibold mb-3">
-                            Photos du club
-                        </label>
-                        <div className="flex flex-wrap gap-4">
-                            {club
-                                .getPictures()
-                                .filter(
-                                    (picture) =>
-                                        !deletedPictures.includes(picture),
-                                )
-                                .map((pic, index) => (
+                        <div>
+                            <label className="block font-semibold mb-3">
+                                Photos du club
+                            </label>
+                            <div className="flex flex-wrap gap-4">
+                                {club
+                                    .getPictures()
+                                    .filter(
+                                        (picture) =>
+                                            !deletedPictures.includes(picture),
+                                    )
+                                    .map((pic, index) => (
+                                        <div
+                                            key={`${pic}-${index}`}
+                                            style={{
+                                                backgroundImage: `url(${picturesCdn.get(pic)})`,
+                                            }}
+                                            className="w-32 h-32 bg-cover bg-center bg-no-repeat rounded flex"
+                                        >
+                                            <div
+                                                onClick={() =>
+                                                    setDeletedPicture([
+                                                        ...deletedPictures,
+                                                        pic,
+                                                    ])
+                                                }
+                                            >
+                                                <XMarkIcon className="h-7 text-white cursor-pointer" />
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                {getNewPicturesUrls().map((pic, index) => (
                                     <div
-                                        key={`${pic}-${index}`}
+                                        key={index}
                                         style={{
-                                            backgroundImage: `url(${picturesCdn.get(pic)})`,
+                                            backgroundImage: `url(${pic})`,
                                         }}
                                         className="w-32 h-32 bg-cover bg-center bg-no-repeat rounded flex"
                                     >
                                         <div
                                             onClick={() =>
-                                                setDeletedPicture([
-                                                    ...deletedPictures,
-                                                    pic,
-                                                ])
+                                                setNewPictures(
+                                                    newPictures.filter(
+                                                        (_, i) => i !== index,
+                                                    ),
+                                                )
                                             }
                                         >
                                             <XMarkIcon className="h-7 text-white cursor-pointer" />
                                         </div>
                                     </div>
                                 ))}
-
-                            {getNewPicturesUrls().map((pic, index) => (
-                                <div
-                                    key={index}
-                                    style={{
-                                        backgroundImage: `url(${pic})`,
-                                    }}
-                                    className="w-32 h-32 bg-cover bg-center bg-no-repeat rounded flex"
-                                >
+                                <div className="w-32 h-32 flex justify-center items-center">
                                     <div
                                         onClick={() =>
-                                            setNewPictures(
-                                                newPictures.filter(
-                                                    (_, i) => i !== index,
-                                                ),
-                                            )
+                                            setUploadPicturesModal(true)
                                         }
+                                        className="cursor-pointer w-17 h-17  bg-gray-200 rounded-full flex justify-center items-center"
                                     >
-                                        <XMarkIcon className="h-7 text-white cursor-pointer" />
+                                        <PlusIcon className="h-13 text-white" />
                                     </div>
-                                </div>
-                            ))}
-                            <div className="w-32 h-32 flex justify-center items-center">
-                                <div
-                                    onClick={() => setUploadPicturesModal(true)}
-                                    className="cursor-pointer w-17 h-17  bg-gray-200 rounded-full flex justify-center items-center"
-                                >
-                                    <PlusIcon className="h-13 text-white" />
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {/* <div>
+                        {/* <div>
                         <button
                             onClick={() => setShowMembersModal(true)}
                             className="px-3 py-1 bg-gray-800 text-white rounded cursor-pointer"
@@ -324,27 +332,30 @@ export const ClubSettings: React.FC = () => {
                         </button>
                     </div> */}
 
-                    <div className="flex mt-10 gap-5">
-                        <button
-                            onClick={() => {
-                                setClub(clubBase);
-                                setNewPictures([]);
-                                setDeletedPicture([]);
-                                setNewThumbnail(undefined);
-                            }}
-                            className="px-3 h-10 w-30 py-1 bg-white text-gray-800 border-2 border-gray-800 rounded cursor-pointer hover:bg-gray-800 hover:text-white transition-all"
-                        >
-                            Réinitialiser
-                        </button>
-                        <button
-                            onClick={save}
-                            className="px-3 h-10 w-30 py-1 bg-gray-800 text-white rounded cursor-pointer"
-                        >
-                            Sauvegarder
-                        </button>
+                        <div className="flex mt-10 gap-5">
+                            <button
+                                onClick={() => {
+                                    setClub(clubBase);
+                                    setNewPictures([]);
+                                    setDeletedPicture([]);
+                                    setNewThumbnail(undefined);
+                                }}
+                                className="px-3 h-10 w-30 py-1 bg-white text-gray-800 border-2 border-gray-800 rounded cursor-pointer hover:bg-gray-800 hover:text-white transition-all"
+                            >
+                                Réinitialiser
+                            </button>
+                            <button
+                                onClick={save}
+                                className="px-3 h-10 w-30 py-1 bg-gray-800 text-white rounded cursor-pointer"
+                            >
+                                Sauvegarder
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </SettingsLayout>
             </Layout>
         </>
     );
 };
+
+export default ClubSettings;

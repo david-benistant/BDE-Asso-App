@@ -21,6 +21,13 @@ export default function Sidebar({
                 >
                     Accueil
                 </Link>
+                <Link
+                    to="/calendar"
+                    onClick={onClose}
+                    className="p-2 rounded md:hover:bg-gray-200 md:block hidden"
+                >
+                    Calendrier
+                </Link>
             </nav>
         </div>
     );

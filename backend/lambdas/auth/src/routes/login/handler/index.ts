@@ -40,8 +40,10 @@ export const baseHandler: Handler = async (event: APIGatewayProxyEventV2) => {
             email: me.mail,
             displayName: me.displayName,
             name: me.displayName.toLowerCase(),
+            followedClubs: [],
+            joinedClubs: []
         });
-        await UserRepository.putUser(user);
+        await UserRepository.put(user);
         const photo = await graphService.getMePhoto(AzureAccessToken);
         await s3Service.putObject(
             propertiesService.getProfileBucket(),

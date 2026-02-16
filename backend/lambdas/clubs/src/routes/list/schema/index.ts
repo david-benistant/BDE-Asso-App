@@ -10,7 +10,7 @@ export const responseSchema = Type.Array(
         thumbnail: Type.String(),
         pictures: Type.Array(Type.String()),
         members: Type.Array(Type.String()),
-        nbFollowers: Type.Number(),
+        followers: Type.Array(Type.String()),
     }),
 );
 

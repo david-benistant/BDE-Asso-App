@@ -1,0 +1,27 @@
+{
+    "kicked-from-club": {
+        "title": "Exclusion du club :clubName",
+        "message": "Vous avez été exclu du club :clubName par :clubPresident. Vous n'avez désormais plus accès aux événements privés ni aux contenus réservés aux membres.",
+        "type": "info"
+    },
+    "accepted-club": {
+        "title": "Demande acceptée — :clubName",
+        "message": ":clubPresident a accepté votre demande d’adhésion au club :clubName. Vous pouvez maintenant accéder aux activités privées et aux événements du club.",
+        "type": "info"
+    },
+    "refused-from-club": {
+        "title": "Demande refusée — :clubName",
+        "message": ":clubPresident a refusé votre demande d’adhésion au club :clubName. Vous pouvez contacter le responsable du club pour obtenir plus d’informations.",
+        "type": "info"
+    },
+    "left-club": {
+        "title": "Départ du club :clubName",
+        "message": ":userName a quitté le club :clubName et ne fait désormais plus partie des membres.",
+        "type": "info"
+    },
+    "join-request": {
+        "title": "Nouvelle demande d’adhésion — :clubName",
+        "message": ":userName souhaite rejoindre le club :clubName. Vous pouvez accepter ou refuser cette demande depuis l’interface de gestion des membres.",
+        "type": "join-request"
+    }
+}

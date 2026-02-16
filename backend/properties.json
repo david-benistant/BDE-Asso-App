@@ -5,5 +5,9 @@
     "PROFILES_BUCKET": "asso-app-profiles",
     "PICTURES_BUCKET": "asso-app-pictures",
     "AWS_ACCOUNT_ID" : "892091699078",
-    "CLUBS_TABLE": "asso-app-clubs"
+    "CLUBS_TABLE": "asso-app-clubs",
+    "NOTIFICATIONS_TABLE": "asso-app-notifications",
+    "JOIN_REQUEST_TABLE": "asso-app-join-request",
+    "EVENTS_TABLE": "asso-app-events",
+    "ATTACHMENTS_BUCKET": "asso-app-attachments"
 }

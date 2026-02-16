@@ -14,8 +14,10 @@ export const responseSchema = Type.Object({
     presidentId: Type.String(),
     thumbnail: Type.String(),
     pictures: Type.Array(Type.String()),
-    members: Type.Array(Type.String()),
-    nbFollowers: Type.Number(),
+    members: Type.Array(
+        Type.Object({ id: Type.String(), role: Type.String() }),
+    ),
+    followers: Type.Array(Type.String()),
 });
 
 export type TResponse = Static<typeof responseSchema>;

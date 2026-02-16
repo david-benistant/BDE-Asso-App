@@ -6,7 +6,7 @@ export default class extends ApiProvider {
         super(`/clubs/${id}/pictures/delete`);
     }
 
-    async put(hashs: string[]): Promise<Result<undefined>> {
+    async put(hashs: string[]): Promise<Result<void>> {
         const response = await this.callApiJson({
             method: "PUT",
             body: JSON.stringify({ hashs })

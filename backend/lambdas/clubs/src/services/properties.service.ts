@@ -1,4 +1,4 @@
-import properties from "../../../../properties.json"
+import properties from "../../../../properties.json";
 
 class PropertiesService {
     private STAGE: string;
@@ -6,6 +6,9 @@ class PropertiesService {
     private CLUBS_TABLE: string;
     private PROFILES_BUCKET: string;
     private PICTURES_BUCKET: string;
+    private USERS_TABLE: string;
+    private JOIN_REQUEST_TABLE: string;
+    private NOTIFICATIONS_TABLE: string;
 
     constructor() {
         this.STAGE = properties.STAGE;
@@ -13,6 +16,9 @@ class PropertiesService {
         this.AZURE_CLIENT_ID = properties.AZURE_CLIENT_ID;
         this.PROFILES_BUCKET = `${properties.PROFILES_BUCKET}-${this.STAGE}`;
         this.PICTURES_BUCKET = `${properties.PICTURES_BUCKET}-${this.STAGE}`;
+        this.USERS_TABLE = `${properties.USERS_TABLE}-${this.STAGE}`;
+        this.JOIN_REQUEST_TABLE = `${properties.JOIN_REQUEST_TABLE}-${this.STAGE}`;
+        this.NOTIFICATIONS_TABLE = `${properties.NOTIFICATIONS_TABLE}-${this.STAGE}`;
     }
 
     getStage() {
@@ -35,7 +41,17 @@ class PropertiesService {
         return this.PICTURES_BUCKET;
     }
 
+    getUserTable() {
+        return this.USERS_TABLE;
+    }
 
+    getJoinRequestTable() {
+        return this.JOIN_REQUEST_TABLE;
+    }
+
+    getNotificationTable() {
+        return this.NOTIFICATIONS_TABLE;
+    }
 }
 
 export default new PropertiesService();

@@ -8,7 +8,7 @@ export default class extends ApiProvider {
         super(`/clubs/${id}/pictures`);
     }
 
-    async put(images: ArrayBuffer[]): Promise<Result<undefined>> {
+    async put(images: ArrayBuffer[]): Promise<Result<void>> {
         const hashs: { hash: string; image: ArrayBuffer }[] = images.map(
             (image) => {
                 return {

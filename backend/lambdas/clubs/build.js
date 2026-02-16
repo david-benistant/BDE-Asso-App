@@ -15,26 +15,22 @@ const listDirectories = async () => {
 
 const build = async () => {
     const directories = await listDirectories();
-    await Promise.all(
-        directories.map(async (dir) => {
-            try {
-
-                await esbuild.build({
-                    entryPoints: [`src/routes/${dir}/handler/index.ts`],
-                    bundle: true,
-                    outfile: `src/routes/${dir}/dist/index.js`,
-                    platform: "node",
-                    format: "cjs",
-                    sourcemap: false,
-                    plugins: [tsPathsPlugin()],
-                    tsconfig: "./tsconfig.json",
-                    absWorkingDir: process.cwd(),
-                });
-                console.log(`\t ${dir} built`)
-            } catch(e) {
-            }
-        }),
-    );
+    for (const dir of directories) {
+        try {
+            await esbuild.build({
+                entryPoints: [`src/routes/${dir}/handler/index.ts`],
+                bundle: true,
+                outfile: `src/routes/${dir}/dist/index.js`,
+                platform: "node",
+                format: "cjs",
+                sourcemap: false,
+                plugins: [tsPathsPlugin()],
+                tsconfig: "./tsconfig.json",
+                absWorkingDir: process.cwd(),
+            });
+            console.log(`\t ${dir} built`);
+        } catch (e) {}
+    }
 };
 
 build();

@@ -1,7 +1,7 @@
 
 
 class picturesCDN {
-    private endpoint = "https://d3sn3z46i3e7c9.cloudfront.net"
+    private endpoint = "https://d2vcnzzog3cftm.cloudfront.net"
 
     get(hash: string) {
         return `${this.endpoint}/${hash}`

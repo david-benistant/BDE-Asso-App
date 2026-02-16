@@ -1,10 +1,10 @@
 import { Type, Static } from "@sinclair/typebox";
 
-export const pathPramsSchema = Type.Object({
+export const pathParamsSchema = Type.Object({
     id: Type.String(),
 });
 
-export type TPathParams = Static<typeof pathPramsSchema>;
+export type TPathParams = Static<typeof pathParamsSchema>;
 
 
 export const responseSchema = Type.Object({
@@ -16,7 +16,7 @@ export const responseSchema = Type.Object({
     thumbnail: Type.String(),
     pictures: Type.Array(Type.String()),
     members: Type.Array(Type.String()),
-    nbFollowers: Type.Number(),
+    followers: Type.Array(Type.String()),
 });
 
 export type TResponse = Static<typeof responseSchema>;

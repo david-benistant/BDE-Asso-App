@@ -17,8 +17,6 @@
   "devDependencies": {
     "@awalgawe/esbuild-typescript-paths-plugin": "^1.0.1",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.0.10",
-    "i": "^0.3.7",
-    "npm": "^11.8.0"
+    "@types/node": "^25.0.10"
   }
 }

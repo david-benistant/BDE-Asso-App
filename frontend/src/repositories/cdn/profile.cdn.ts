@@ -1,7 +1,7 @@
 
 
 class profileCDN {
-    private endpoint = "https://dnm2c9ie7nmkw.cloudfront.net"
+    private endpoint = "https://d15lraf9xbx4py.cloudfront.net"
 
     get(userId: string) {
         return `${this.endpoint}/${userId}`

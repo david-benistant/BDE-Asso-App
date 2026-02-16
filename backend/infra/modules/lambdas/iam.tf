@@ -32,7 +32,8 @@ resource "aws_iam_role_policy" "lambda_dynamodb_policy" {
           "dynamodb:DeleteItem",
           "dynamodb:Scan",
           "dynamodb:Query",
-          "dynamodb:BatchGetItem"
+          "dynamodb:BatchGetItem",
+          "dynamodb:BatchWriteItem"
         ]
         Resource = "arn:aws:dynamodb:eu-west-3:${var.AWS_ACCOUNT_ID}:table/*"
       },

@@ -1,3 +1,9 @@
+
+export const Roles = {
+    PRESIDENT: "p",
+    ORGANISATOR: "o",
+    MEMBER: "m"
+} as const;
 export interface clubValueObjectProps {
     id: string;
     displayName: string;
@@ -5,8 +11,8 @@ export interface clubValueObjectProps {
     presidentId: string;
     thumbnail: string;
     pictures: string[];
-    members: {role: string, id: string}[];
-    nbFollowers: number;
+    members: { role: string; id: string; displayName: string; }[];
+    followers: string[];
 }
 
 export default class ClubValueObject {
@@ -16,8 +22,8 @@ export default class ClubValueObject {
     private presidentId: string;
     private thumbnail: string;
     private pictures: string[];
-    private members: {role: string; id: string}[];
-    private nbFollowers: number;
+    private members: { role: string; id: string; displayName: string; }[];
+    private followers: string[];
 
     constructor(props: clubValueObjectProps) {
         this.id = props.id;
@@ -27,7 +33,7 @@ export default class ClubValueObject {
         this.thumbnail = props.thumbnail;
         this.pictures = props.pictures;
         this.members = props.members;
-        this.nbFollowers = props.nbFollowers;
+        this.followers = props.followers;
     }
 
     getId() {
@@ -58,8 +64,8 @@ export default class ClubValueObject {
         return this.members;
     }
 
-    getNbFollowers() {
-        return this.nbFollowers;
+    getfollowers() {
+        return this.followers;
     }
 
     getObject(): clubValueObjectProps {
@@ -71,7 +77,7 @@ export default class ClubValueObject {
             thumbnail: this.thumbnail,
             pictures: this.pictures,
             members: this.members,
-            nbFollowers: this.nbFollowers,
+            followers: this.followers,
         };
     }
 }
