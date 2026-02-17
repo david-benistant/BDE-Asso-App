@@ -31,6 +31,7 @@ module "dynamo-db" {
 
 module "api-gateway" {
   source = "./modules/api-gateway"
+  STAGE = var.STAGE
 }
 
 

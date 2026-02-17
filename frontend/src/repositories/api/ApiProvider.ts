@@ -3,7 +3,7 @@ import AuthProvider from "@repositories/AuthProvider"
 
 
 abstract class ApiProvider {
-    protected base: string = "https://o2f8htp258.execute-api.eu-west-3.amazonaws.com/dev";
+    protected base: string = "https://daqo6bjhf3.execute-api.eu-west-3.amazonaws.com/prod";
     protected endpoint: string;
 
     constructor(endpoint: string) {

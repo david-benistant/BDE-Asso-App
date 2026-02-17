@@ -17,7 +17,7 @@ class AuthProvider {
     private account: AccountInfo | null = null;
     private apiToken: string = "";
     private authApiEndpoint =
-        "https://o2f8htp258.execute-api.eu-west-3.amazonaws.com/dev/auth/login";
+        "https://daqo6bjhf3.execute-api.eu-west-3.amazonaws.com/prod/auth/login";
 
     constructor() {
         this.msalInstance = new PublicClientApplication(msalConfig);

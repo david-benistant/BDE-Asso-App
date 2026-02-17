@@ -4,7 +4,7 @@
     "USERS_TABLE": "asso-app-users",
     "PROFILES_BUCKET": "asso-app-profiles",
     "PICTURES_BUCKET": "asso-app-pictures",
-    "AWS_ACCOUNT_ID" : "892091699078",
+    "AWS_ACCOUNT_ID" : "304007661218",
     "CLUBS_TABLE": "asso-app-clubs",
     "NOTIFICATIONS_TABLE": "asso-app-notifications",
     "JOIN_REQUEST_TABLE": "asso-app-join-request",

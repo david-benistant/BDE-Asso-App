@@ -1,5 +1,6 @@
 import ApiError, { ApiErrorStatus } from "./errors.service";
-
+import { readFile } from "fs/promises";
+import path from "path";
 interface GraphToken {
     oid: string;
     given_name: string;
@@ -51,10 +52,14 @@ class GraphService {
             },
         });
 
-        console.log(response.ok);
+        if (response.status === 404) {
+            const fallbackPath = path.join(process.cwd(), "assets", "default.jpg");
+            const fallbackBuffer = await readFile(fallbackPath);
 
+            return fallbackBuffer;
+        }
+        
         if (!response.ok) {
-            console.log(response.body);
             throw new ApiError(
                 500,
                 ApiErrorStatus.INTERNAL_SERVER_ERROR,

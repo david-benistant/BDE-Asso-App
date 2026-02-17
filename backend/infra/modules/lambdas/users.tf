@@ -15,4 +15,5 @@ module "deploy_users" {
   api_execution_arn = var.api_execution_arn
   lambda_role_arn = aws_iam_role.lambda_role.arn
   JWT_SECRET = var.JWT_SECRET
+  STAGE = var.STAGE
 }

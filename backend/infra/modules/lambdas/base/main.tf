@@ -21,7 +21,7 @@ data "archive_file" "lambdas_zip" {
 resource "aws_lambda_function" "lambda" {
   for_each = var.lambdas
 
-  function_name = "${var.namespace}-${each.key}"
+  function_name = "${var.namespace}-${each.key}-${var.STAGE}"
   runtime       = "nodejs20.x"
   handler       = "index.handler"
   role          = var.lambda_role_arn
