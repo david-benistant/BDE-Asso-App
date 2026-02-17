@@ -230,7 +230,9 @@ const PresidentAndNumbers = ({
                     <div className="text-xl font-bold">
                         {club.getMembers().length}
                     </div>
-                    <div className="text-sm text-gray-500">Membre{club.getMembers().length > 1 ?  "s" : "" }</div>
+                    <div className="text-sm text-gray-500">
+                        Membre{club.getMembers().length > 1 ? "s" : ""}
+                    </div>
                     {!isPresident && pending !== undefined && (
                         <button
                             onClick={isMember ? leaveClub : joinClub}
@@ -250,7 +252,9 @@ const PresidentAndNumbers = ({
                     <div className="text-xl font-bold">
                         {club.getfollowers().length}
                     </div>
-                    <div className="text-sm text-gray-500">Abonné{club.getfollowers().length > 1 ?  "s" : "" }</div>
+                    <div className="text-sm text-gray-500">
+                        Abonné{club.getfollowers().length > 1 ? "s" : ""}
+                    </div>
                     <button
                         onClick={isFollowed ? unfollowClub : followClub}
                         disabled={loadingFollow}
@@ -260,17 +264,16 @@ const PresidentAndNumbers = ({
                     </button>
                 </div>
             </div>
-            {isOrganisator ||
-                (isPresident && (
-                    <div className="flex items-center mt-10 gap-4">
-                        <button
-                            onClick={() => setCreateEventModalOpen(true)}
-                            className="w-full h-10 bg-gray-800 text-white rounded cursor-pointer"
-                        >
-                            Créer un évènement
-                        </button>
-                    </div>
-                ))}
+            {(isOrganisator || isPresident) && (
+                <div className="flex items-center mt-10 gap-4">
+                    <button
+                        onClick={() => setCreateEventModalOpen(true)}
+                        className="w-full h-10 bg-gray-800 text-white rounded cursor-pointer"
+                    >
+                        Créer un évènement
+                    </button>
+                </div>
+            )}
         </>
     );
 };

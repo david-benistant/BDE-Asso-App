@@ -12,6 +12,9 @@ import s3Service from "@services/s3.service";
 import propertiesService from "@services/properties.service";
 import dynamoService from "@services/dynamo.service";
 import eventsRepository from "@repositories/events.repository";
+import clubRepository from "@repositories/club.repository";
+import ApiError, { ApiErrorStatus } from "@services/errors.service";
+import { Roles } from "@valueObjects/club.valueObject";
 
 const baseHandler: Handler = async (
     event: TypedAPIGatewayEvent<TBody, TPathParams>,
@@ -19,6 +22,18 @@ const baseHandler: Handler = async (
 ) => {
     const body = event.body;
     const newEventId: string = `${body.visibility}-${v4()}`
+
+    const club = await clubRepository.get(event.pathParameters.clubId)
+
+    const membership = club.getMembers().find((member) => member.id === context.tokenPayload.id)
+
+    if (!membership) {
+        throw new ApiError(403, ApiErrorStatus.FORBIDDEN, "You are not in this club")
+    }
+
+    if (membership.role !== Roles.PRESIDENT && membership.role !== Roles.ORGANISATOR) {
+        throw new ApiError(403, ApiErrorStatus.FORBIDDEN, "You are not allowed to create an event")
+    }
 
     const attachements = await Promise.all(body.attachedFiles.map(async (attachment) => {
         const presignedUrl = await s3Service.generatePutPreSignedUrl(propertiesService.getAttachmentsBucket(), `${newEventId}/${attachment}`)

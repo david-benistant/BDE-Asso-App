@@ -6,7 +6,7 @@ const Layout = ({ children, onSearch, customButton }: { children: JSX.Element, o
     const [sideBarOpen, setSideBarOpen] = useState(false);
 
     return (
-        <div style={{ width: "100vw", height: "100vh" }}>
+        <div style={{ width: "100vw"}}>
             <div className="flex fixed translate-y-14">
                 <Sidebar
                     open={sideBarOpen}
@@ -16,7 +16,7 @@ const Layout = ({ children, onSearch, customButton }: { children: JSX.Element, o
 
                 <div className="relative md:fixed md:left-[calc(var(--spacing)*40)] md:w-[calc(100vw-calc(var(--spacing)*40))] h-[calc(100vh-calc(var(--spacing)*14))] ">
 
-                    <div className="flex-1 w-full h-full overflow-y-auto">
+                    <div className="flex-1 w-full h-full overflow-y-auto md:pb-0 pb-20">
                         <main>{children}</main>
                     </div>
                 </div>
