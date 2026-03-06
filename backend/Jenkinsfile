@@ -9,25 +9,31 @@ pipeline {
     stages {
         stage('Terraform Init') {
             steps {
-                sh 'terraform init'
+                dir("${TF_WORKSPACE}") {
+                    sh 'terraform init'
+                }
             }
         }
 
         stage('Terraform Plan') {
             steps {
-                sh "terraform plan -out=${TF_PLAN_FILE} -var-file=../properties.json"
+                dir("${TF_WORKSPACE}") {
+                    sh "terraform plan -out=${TF_PLAN_FILE} -var-file=../properties.json"
+                }
             }
         }
 
         stage('Approve Plan') {
             steps {
-                input message: 'Do you want to apply this Terraform plan?'
+                input message: 'Do you voulez appliquer ce plan Terraform ?'
             }
         }
 
         // stage('Terraform Apply') {
         //     steps {
-        //         sh "terraform apply ${TF_PLAN_FILE}"
+        //         dir("${TF_WORKSPACE}") {
+        //             sh "terraform apply ${TF_PLAN_FILE}"
+        //         }
         //     }
         // }
     }
