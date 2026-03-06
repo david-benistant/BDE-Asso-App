@@ -8,8 +8,9 @@ import apiGatewayService from "@services/api-gateway.service";
 import clubRepository from "@repositories/club.repository";
 import joinRequestRepository from "@repositories/join-request.repository";
 import JoinRequestValueObject from "@valueObjects/join-request.valueObject";
-import notificationsRepository from "@repositories/notifications.repository";
 import NotificationValueObject from "@valueObjects/notifications.valueObject";
+import usersRepository from "@repositories/users.repository";
+import notifictionsService from "@services/notifications.service";
 
 export const baseHandler: Handler = async (
     event: TypedAPIGatewayEvent<TBody, TPathParams>,
@@ -25,11 +26,13 @@ export const baseHandler: Handler = async (
         displayName: context.tokenPayload.displayName
     }))
 
-    await notificationsRepository.put(
+    const president = await usersRepository.get(club.getPresidentId())
+
+    await notifictionsService.send(
         NotificationValueObject.create("join-request", {
             ":userName": context.tokenPayload.displayName,
             ":clubName": club.getDisplayName(),
-        }, club.getPresidentId(), club.getId()),
+        }, president, `${club.getId()}/members`),
     );
 
     return apiGatewayService.response(204);

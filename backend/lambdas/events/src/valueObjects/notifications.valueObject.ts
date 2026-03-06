@@ -1,6 +1,7 @@
 import { v4 } from "uuid";
 import messages from "../../../../notifications-messages.json";
 import ApiError, { ApiErrorStatus } from "@services/errors.service";
+import UserValueObject from "./users.valueObject";
 
 export enum NotificationType {
     EVENT = "event",
@@ -11,6 +12,8 @@ export enum NotificationType {
 
 export interface notificationValueObjectProps {
     userId: string;
+    userEmail: string;
+    userDisplayName: string;
     id: string;
     title: string;
     message: string;
@@ -28,6 +31,8 @@ interface NotificationMessage {
 
 class NotificationValueObject {
     private userId: string;
+    private userEmail: string;
+    private userDisplayName: string;
     private id: string;
     private title: string;
     private message: string;
@@ -39,7 +44,7 @@ class NotificationValueObject {
     static create(
         key: string,
         attributes: Record<string, string>,
-        userId: string,
+        user: UserValueObject | { getDisplayName: () => string, getEmail: () => string, getId: () => string },
         resourceId: string,
     ) {
         const value: NotificationMessage = messages[key];
@@ -59,8 +64,10 @@ class NotificationValueObject {
         }
 
         return new NotificationValueObject({
+            userDisplayName: user.getDisplayName(),
+            userEmail: user.getEmail(),
+            userId: user.getId(),
             id: v4(),
-            userId,
             resourceId,
             title: tmpTitle,
             message: tmpMessage,
@@ -71,6 +78,8 @@ class NotificationValueObject {
     }
 
     constructor(props: notificationValueObjectProps) {
+        this.userDisplayName = props.userDisplayName;
+        this.userEmail = props.userEmail;
         this.userId = props.userId;
         this.id = props.id;
         this.title = props.title;
@@ -113,16 +122,26 @@ class NotificationValueObject {
         return this.createdAt;
     }
 
+    public getUserEmail(): string {
+        return this.userEmail;
+    }
+
+    public getUserDisplayName(): string {
+        return this.userDisplayName;
+    }
+
     public getObject(): notificationValueObjectProps {
         return {
             userId: this.userId,
+            userDisplayName: this.userDisplayName,
+            userEmail: this.userEmail,
             id: this.id,
             title: this.title,
             message: this.message,
             type: this.type,
             resourceId: this.resourceId,
             expiresAt: this.expiresAt,
-            createdAt: this.createdAt
+            createdAt: this.createdAt,
         };
     }
 }

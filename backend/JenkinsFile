@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    environment {
+        TF_WORKSPACE = "dev"
+        TF_PLAN_FILE = "tfplan.out"
+    }
+
+    stages {
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                sh "terraform plan -out=${TF_PLAN_FILE}"
+            }
+        }
+
+        stage('Approve Plan') {
+            steps {
+                input message: 'Do you want to apply this Terraform plan?'
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                sh "terraform apply ${TF_PLAN_FILE}"
+            }
+        }
+    }
+}

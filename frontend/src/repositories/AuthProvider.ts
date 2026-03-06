@@ -1,5 +1,6 @@
 import { PublicClientApplication, type AccountInfo } from "@azure/msal-browser";
-import { msalConfig } from "@src/authConfig";
+import { authApiEndpoint } from "@src/endpointsConfig";
+import { loginRequest, msalConfig } from "@src/authConfig";
 import { Result } from "@utils/Result";
 import { jwtDecode } from "jwt-decode";
 
@@ -16,8 +17,7 @@ class AuthProvider {
     private msalInstance: PublicClientApplication;
     private account: AccountInfo | null = null;
     private apiToken: string = "";
-    private authApiEndpoint =
-        "https://daqo6bjhf3.execute-api.eu-west-3.amazonaws.com/prod/auth/login";
+    private authApiEndpoint = authApiEndpoint;
 
     constructor() {
         this.msalInstance = new PublicClientApplication(msalConfig);
@@ -67,12 +67,16 @@ class AuthProvider {
             }
         }
         if (!this.account) return;
-        const token = await this.msalInstance.acquireTokenSilent({
-            account: this.account,
-            scopes: ["User.Read"],
-        });
-
-        return token.accessToken;
+        try {
+            const token = await this.msalInstance.acquireTokenSilent({
+                account: this.account,
+                scopes: ["User.Read"],
+            });
+    
+            return token.accessToken;
+        } catch {
+            await this.msalInstance.loginRedirect(loginRequest)
+        }
     }
 
     async getAccountInfos(): Promise<GraphToken | null> {

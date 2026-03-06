@@ -13,6 +13,8 @@ import {
     QueryCommand,
     BatchWriteCommand,
     BatchWriteCommandInput,
+    BatchGetCommand,
+    BatchGetCommandInput,
 } from "@aws-sdk/lib-dynamodb";
 import ApiError, { ApiErrorStatus } from "./errors.service";
 
@@ -54,7 +56,7 @@ class DynamoService {
             const result = await this.docClient.send(new QueryCommand(input));
             return (result.Items ?? []) as T[];
         } catch (e) {
-            console.log(e)
+            console.log(e);
             throw new ApiError(500, ApiErrorStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -63,7 +65,7 @@ class DynamoService {
         try {
             await this.docClient.send(new DeleteCommand(input));
         } catch (e) {
-            console.log(e)
+            console.log(e);
             throw new ApiError(500, ApiErrorStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -83,6 +85,40 @@ class DynamoService {
                 throw new ApiError(500, ApiErrorStatus.INTERNAL_SERVER_ERROR);
             }
         }
+    }
+
+    async noLimitBatchGet<T>(
+        tableName: string,
+        keys: Record<string, any>[],
+    ): Promise<T[]> {
+        const MAX_BATCH = 100;
+        const results: T[] = [];
+
+        for (let i = 0; i < keys.length; i += MAX_BATCH) {
+            let requestItems: BatchGetCommandInput["RequestItems"] = {
+                [tableName]: {
+                    Keys: keys.slice(i, i + MAX_BATCH),
+                },
+            };
+
+            try {
+                do {
+                    const response = await this.docClient.send(
+                        new BatchGetCommand({ RequestItems: requestItems }),
+                    );
+
+                    const items = response.Responses?.[tableName] ?? [];
+                    results.push(...(items as T[]));
+
+                    requestItems = response.UnprocessedKeys;
+                } while (requestItems && Object.keys(requestItems).length > 0);
+            } catch (e) {
+                console.log(e);
+                throw new ApiError(500, ApiErrorStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
+        return results;
     }
 }
 

@@ -1,7 +1,10 @@
 import propertiesService from "@services/properties.service";
 import dynamoService from "@services/dynamo.service";
 import ApiError, { ApiErrorStatus } from "@services/errors.service";
-import EventValueObject, { eventValueObjectProps, Tvisibility } from "@valueObjects/event.valueObject";
+import EventValueObject, {
+    eventValueObjectProps,
+    Tvisibility,
+} from "@valueObjects/event.valueObject";
 
 class EventRepository {
     private name = propertiesService.getEventsTable();
@@ -31,11 +34,11 @@ class EventRepository {
                 TableName: this.name,
                 Key: {
                     clubId,
-                    id
-                }
+                    id,
+                },
             });
 
-            return new EventValueObject(result)
+            return new EventValueObject(result);
         } catch (e) {
             if (e instanceof ApiError) {
                 throw e;
@@ -49,15 +52,44 @@ class EventRepository {
         }
     }
 
-    public async listByClub(clubId: string, visibility: Tvisibility): Promise<EventValueObject[]> {
+    public async listByClub(
+        clubId: string,
+        visibility: Tvisibility,
+    ): Promise<EventValueObject[]> {
         try {
             const result = await dynamoService.query<eventValueObjectProps>({
                 TableName: this.name,
-                KeyConditionExpression: "clubId = :cid AND begins_with(id, :prefix)",
+                KeyConditionExpression:
+                    "clubId = :cid AND begins_with(id, :prefix)",
                 ExpressionAttributeValues: {
                     ":cid": clubId,
-                    ":prefix": `${visibility}-`
+                    ":prefix": `${visibility}-`,
                 },
+            });
+
+            return result.map((item) => new EventValueObject(item));
+        } catch (e) {
+            if (e instanceof ApiError) {
+                throw e;
+            } else {
+                throw new ApiError(
+                    500,
+                    ApiErrorStatus.INTERNAL_SERVER_ERROR,
+                    JSON.stringify(e),
+                );
+            }
+        }
+    }
+
+    public async listByWeek(week: number): Promise<EventValueObject[]> {
+        try {
+            const result = await dynamoService.query<eventValueObjectProps>({
+                TableName: this.name,
+                IndexName: "weeksIndex",
+                KeyConditionExpression: "weekBucket = :week",
+                ExpressionAttributeValues: {
+                ":week": week
+                }
             });
 
             return result.map((item) => new EventValueObject(item));

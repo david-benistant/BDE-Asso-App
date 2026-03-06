@@ -14,6 +14,7 @@ import schemaValidatorMiddleware from "@middlewares/schema-validator";
 import notificationsRepository from "@repositories/notifications.repository";
 import NotificationValueObject from "@valueObjects/notifications.valueObject";
 import UserValueObject from "@valueObjects/users.valueObject";
+import notifictionsService from "@services/notifications.service";
 
 export const baseHandler: Handler = async (
     event: TypedAPIGatewayEvent<TBody, TPathParams>,
@@ -52,13 +53,13 @@ export const baseHandler: Handler = async (
     await clubRepository.put(newClub);
 
 
-    await notificationsRepository.put(
+    await notifictionsService.send(
         NotificationValueObject.create("accepted-club", {
             ":clubName": club.getDisplayName(),
             ":clubPresident": club
                 .getMembers()
                 .find((member) => member.id === club.getPresidentId()).displayName,
-        }, event.body.userId, club.getId()),
+        }, user, club.getId()),
     );
 
     return apiGatewayService.response(204);

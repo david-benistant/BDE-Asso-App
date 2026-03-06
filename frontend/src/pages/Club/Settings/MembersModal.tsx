@@ -1,6 +1,4 @@
-import userValueObject from "@valueObjects/users/user.valueObject";
-import React, { useEffect, useState } from "react";
-import usersRepository from "@repositories/api/users/:id/handlers";
+import React from "react";
 import profileCDN from "@repositories/cdn/profile.cdn";
 import Modal from "@components/Modal/Modal";
 import type { clubValueObjectProps } from "@valueObjects/clubs/club.valueObject";
@@ -8,67 +6,50 @@ import type { clubValueObjectProps } from "@valueObjects/clubs/club.valueObject"
 type EventModalProps = {
     setIsOpen: (value: boolean) => void;
     members: clubValueObjectProps["members"];
+    buttonText?: string;
+    buttonAction?: (member: clubValueObjectProps["members"][0]) => void;
 };
 
-const MembersModal: React.FC<EventModalProps> = ({ setIsOpen, members }) => {
-    const [membersDatas, setMembersDatas] = useState<
-        userValueObject[] | undefined
-    >();
+const MembersModal: React.FC<EventModalProps> = ({
+    setIsOpen,
+    members,
+    buttonText,
+    buttonAction,
+}) => {
 
-    useEffect(() => {
-        const fetchDatas = async () => {
-            const data = await Promise.all(
-                members.map(async (member) => {
-                    const users = new usersRepository(member.id);
-                    const memberData = await users.get();
-
-                    if (!memberData.isFailure) {
-                        return memberData.getValue();
-                    } else {
-                        return new userValueObject({
-                            id: member.id,
-                            email: "not found",
-                            displayName: "not found",
-                            followedClubs: [],
-                            joinedClubs: [],
-                            name: "not found"
-                        });
-                    }
-                }),
-            );
-            setMembersDatas(data);
-        };
-
-        if (!membersDatas) {
-            fetchDatas();
-        }
-    });
+    const onClick = (member: clubValueObjectProps["members"][0]) => {
+        if (!buttonAction) return
+        buttonAction(member)
+        setIsOpen(false)
+    }
 
     return (
         <Modal setIsOpen={setIsOpen} title={"Membres"}>
-            {membersDatas &&
-                membersDatas.map((member) => (
+            {members &&
+                members.map((member) => (
                     <div
-                        key={member.getId()}
+                        key={member.id}
                         className="flex items-center justify-between px-4 py-2 border-b border-gray-200 hover:bg-gray-50 transition"
                     >
                         <div className="flex items-center gap-3 min-w-0 ">
                             <img
-                                src={profileCDN.get(member.getId())}
-                                alt={member.getDisplayName()}
+                                src={profileCDN.get(member.id)}
+                                alt={member.displayName}
                                 className="w-10 h-10 rounded-full object-cover flex-shrink-0"
                             />
                             <span className="font-medium text-gray-900 truncate max-w-xs pr-2">
-                                {member.getDisplayName()}
+                                {member.displayName}
                             </span>
                         </div>
 
+                        { (buttonText && buttonAction) && 
                         <button
-                            // onClick={() => handleKick(member.getId())}
-                            className="px-3 py-1 text-sm font-medium text-white bg-red-500 rounded-md hover:bg-red-600 transition flex-shrink-0"
+                            onClick={() => onClick(member)}
+                            className="cursor-pointer px-3 py-1 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-600 transition flex-shrink-0"
                         >
-                            Virer
+                            {buttonText}
                         </button>
+                         }
                     </div>
                 ))}
         </Modal>

@@ -10,6 +10,7 @@ export interface eventValueObjectProps {
     visibility: Tvisibility;
     attendee: { displayName: string, id: string }[];
     duration: number;
+    weekBucket: number;
 }
 
 export type Tvisibility = "public" | "private";
@@ -26,6 +27,7 @@ class EventValueObject {
     private visibility: Tvisibility;
     private attendee: { displayName: string, id: string }[];
     private duration: number;
+    private weekBucket: number;
 
     constructor(props: Omit<eventValueObjectProps, "expiresAt" | "createdAt" >) {
         this.clubId = props.clubId;
@@ -46,6 +48,7 @@ class EventValueObject {
         this.duration = props.duration;
         this.visibility = props.visibility;
         this.attendee = props.attendee;
+        this.weekBucket = props.weekBucket;
     }
 
     getId() {
@@ -92,6 +95,10 @@ class EventValueObject {
         return this.duration;
     }
 
+    getWeekBucket() {
+        return this.weekBucket
+    }
+
     getObject(): eventValueObjectProps {
         return {
             clubId: this.clubId,
@@ -105,6 +112,7 @@ class EventValueObject {
             visibility: this.visibility,
             attendee: this.attendee,
             duration: this.duration,
+            weekBucket: this.weekBucket
         };
     }
 }

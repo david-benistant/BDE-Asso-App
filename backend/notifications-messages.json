@@ -23,5 +23,15 @@
         "title": "Nouvelle demande d’adhésion — :clubName",
         "message": ":userName souhaite rejoindre le club :clubName. Vous pouvez accepter ou refuser cette demande depuis l’interface de gestion des membres.",
         "type": "join-request"
+    },
+    "new-event": {
+        "title": "Nouvel événement dans :clubName",
+        "message": "Le club :clubName organise un nouvel événement : :eventName. Rendez-vous sur la page du club pour découvrir les détails et vous inscrire.",
+        "type": "info"
+    },
+    "new-president": {
+        "title": "Vous êtes désormais président — :clubName",
+        "message": "Vous avez été promu président du club :clubName. Vous pouvez maintenant gérer les membres, les événements et les paramètres du club.",
+        "type": "info"
     }
 }

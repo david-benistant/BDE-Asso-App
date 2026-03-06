@@ -1,10 +1,10 @@
 {
-    "STAGE": "prod",
+    "STAGE": "dev",
     "AZURE_CLIENT_ID": "25962da1-190d-479b-889f-d47b6c92c3af",
     "USERS_TABLE": "asso-app-users",
     "PROFILES_BUCKET": "asso-app-profiles",
     "PICTURES_BUCKET": "asso-app-pictures",
-    "AWS_ACCOUNT_ID" : "304007661218",
+    "AWS_ACCOUNT_ID" : "892091699078",
     "CLUBS_TABLE": "asso-app-clubs",
     "NOTIFICATIONS_TABLE": "asso-app-notifications",
     "JOIN_REQUEST_TABLE": "asso-app-join-request",

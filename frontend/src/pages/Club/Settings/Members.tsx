@@ -12,6 +12,7 @@ import clubMemberRepository from "@repositories/api/clubs/:id/members/:userId/ha
 import clubPendingsRepository from "@repositories/api/clubs/:id/join/pendings/handlers";
 import JoinRequestValueObject from "@valueObjects/clubs/pendings/join-request.valueObject";
 import clubPendingAcceptRepository from "@repositories/api/clubs/:id/join/accept/handlers";
+import clubPendingRefuseRepository from "@repositories/api/clubs/:id/join/refuse/handlers";
 
 const ClubMembers: React.FC = () => {
     const [clubBase, setClubBase] = useState<ClubValueObject | undefined>();
@@ -88,8 +89,6 @@ const ClubMembers: React.FC = () => {
                     .filter((member) => member.id !== userId),
             }),
         );
-
-        // ? bah save mec ?
     };
 
     const save = async () => {
@@ -154,6 +153,30 @@ const ClubMembers: React.FC = () => {
         }
     };
 
+    const refuseJoin = async (userId: string) => {
+        const clubPendingRefuseRepo = new clubPendingRefuseRepository(id);
+
+        const joinRequest = pendings.find(
+            (item) => item.getUserId() === userId,
+        );
+        const tmpPendings = pendings.filter(
+            (item) => item.getUserId() !== userId,
+        );
+
+        if (!joinRequest) {
+            return toast("Error while accepting member", "error");
+        }
+
+        setPendings(tmpPendings);
+
+        const response = await clubPendingRefuseRepo.put(userId);
+
+        if (response.isFailure) {
+            toast(response.getError(), "error");
+            setPendings([...tmpPendings, joinRequest]);
+        }
+    };
+
     return (
         <>
             {saving && (
@@ -199,7 +222,14 @@ const ClubMembers: React.FC = () => {
                                             >
                                                 Accepter
                                             </button>
-                                            <button className="cursor-pointer px-4 h-8 bg-red-600 text-white rounded">
+                                            <button
+                                                onClick={() =>
+                                                    refuseJoin(
+                                                        pending.getUserId(),
+                                                    )
+                                                }
+                                                className="cursor-pointer px-4 h-8 bg-red-600 text-white rounded"
+                                            >
                                                 Refuser
                                             </button>
                                         </div>

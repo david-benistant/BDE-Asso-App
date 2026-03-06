@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import notificationsRepository from "@repositories/api/notifications/handlers";
 import { useToast } from "@contexts/ToastContext";
-import NotificationValueObject, {
-    NotificationType,
-} from "@valueObjects/notifications/notifications.valueObject";
+import NotificationValueObject from "@valueObjects/notifications/notifications.valueObject";
 import { useNavigate } from "react-router-dom";
 
 export default function NotificationPopover() {
@@ -81,9 +79,7 @@ export default function NotificationPopover() {
     }, []);
 
     const handleClick = (notification: NotificationValueObject) => {
-        if (notification.getType() === NotificationType.JOIN_REQUEST) {
-            navigate(`/club/${notification.getResourceId()}/members`);
-        }
+        navigate(`/club/${notification.getResourceId()}`);
     };
 
     const openNotifications = () => {

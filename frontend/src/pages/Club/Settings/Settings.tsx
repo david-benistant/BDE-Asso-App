@@ -1,6 +1,5 @@
 import Layout from "@components/Layout/Layout";
 import React, { useEffect, useRef, useState } from "react";
-import MembersModal from "./MembersModal";
 import { XMarkIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@contexts/ToastContext";
@@ -16,7 +15,7 @@ import SettingsLayout from "./Layout";
 import type { ImageItem } from "@components/ImageDropzone/ImageDropzone";
 
 const ClubSettings: React.FC = () => {
-    const [showMembersModal, setShowMembersModal] = useState(false);
+    // const [showMembersModal, setShowMembersModal] = useState(false);
     const nameInput = useRef<HTMLInputElement | null>(null);
     const descripitonInput = useRef<HTMLTextAreaElement | null>(null);
     const [clubBase, setClubBase] = useState<ClubValueObject | undefined>();
@@ -150,12 +149,6 @@ const ClubSettings: React.FC = () => {
                 <div className="fixed inset-0 z-50 bg-black/70">
                     <Spinner />
                 </div>
-            )}
-            {showMembersModal && (
-                <MembersModal
-                    setIsOpen={setShowMembersModal}
-                    members={club.getMembers()}
-                />
             )}
 
             {uploadThumbnailModal && (
@@ -323,14 +316,6 @@ const ClubSettings: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* <div>
-                        <button
-                            onClick={() => setShowMembersModal(true)}
-                            className="px-3 py-1 bg-gray-800 text-white rounded cursor-pointer"
-                        >
-                            Voir les membres ({club.getMembers().length})
-                        </button>
-                    </div> */}
 
                         <div className="flex mt-10 gap-5">
                             <button

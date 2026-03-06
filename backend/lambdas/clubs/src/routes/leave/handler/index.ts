@@ -13,6 +13,7 @@ import notificationsRepository from "@repositories/notifications.repository";
 import NotificationValueObject from "@valueObjects/notifications.valueObject";
 import usersRepository from "@repositories/users.repository";
 import UserValueObject from "@valueObjects/users.valueObject";
+import notifictionsService from "@services/notifications.service";
 
 const baseHandler: Handler = async (
     event: TypedAPIGatewayEvent<{}, TPathParams>,
@@ -53,14 +54,15 @@ const baseHandler: Handler = async (
 
     await usersRepository.put(newUser);
 
-    await notificationsRepository.put(
+    const president = await usersRepository.get(club.getPresidentId())
+    await notifictionsService.send(
         NotificationValueObject.create(
             "left-club",
             {
                 ":clubName": club.getDisplayName(),
                 ":userName": leaving.displayName,
             },
-            club.getPresidentId(),
+            president,
             club.getId(),
         ),
     );

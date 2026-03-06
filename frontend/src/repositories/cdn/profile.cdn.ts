@@ -1,7 +1,8 @@
+import { profileCDNEndpoint } from "@src/endpointsConfig";
 
 
 class profileCDN {
-    private endpoint = "https://d149itoigrs52f.cloudfront.net"
+    private endpoint = profileCDNEndpoint
 
     get(userId: string) {
         return `${this.endpoint}/${userId}`

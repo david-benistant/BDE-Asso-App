@@ -24,12 +24,12 @@ export default function SettingsLayout({ children }: LayoutProps) {
                 >
                     Membres
                 </button>
-                {/* <button
+                <button
                     onClick={() => navigate(`/club/${id}/danger`)}
                     className="cursor-pointer px-3 py-1 rounded hover:bg-gray-700 transition shrink-0"
                 >
                     Zone de danger
-                </button> */}
+                </button>
             </nav>
 
             <div className="flex-1 bg-gray-100">{children}</div>

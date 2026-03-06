@@ -29,7 +29,6 @@ const baseHandler: Handler = async (
         const club = await clubRepository.get(event.pathParameters.clubId)
     
         const membership = club.getMembers().find((member) => member.id === context.tokenPayload.id)
-    
         if (!membership) {
             throw new ApiError(403, ApiErrorStatus.FORBIDDEN, "You are not allowed to see private events for this club")
         }

@@ -1,9 +1,10 @@
 import { Result } from "@utils/Result";
 import AuthProvider from "@repositories/AuthProvider"
+import { apiEndpoint } from "@src/endpointsConfig";
 
 
 abstract class ApiProvider {
-    protected base: string = "https://daqo6bjhf3.execute-api.eu-west-3.amazonaws.com/prod";
+    protected base: string = apiEndpoint;
     protected endpoint: string;
 
     constructor(endpoint: string) {

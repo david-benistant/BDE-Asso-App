@@ -31,6 +31,15 @@ class UserRepository {
         }
     }
 
+    public async batchGetNotThrow(ids: string[]): Promise<UserValueObject[]> {
+        const items = await dynamoService.noLimitBatchGet<userValueObjectProps>(
+            this.name,
+            ids.map((id) => ({ id })),
+        );
+
+        return items.map((item) => new UserValueObject(item));
+    }
+
     public async getNotThrow(id: string): Promise<UserValueObject | undefined> {
         try {
             const result = await dynamoService.get<userValueObjectProps>({

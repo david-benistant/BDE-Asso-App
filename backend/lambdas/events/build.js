@@ -27,6 +27,7 @@ const build = async () => {
                 plugins: [tsPathsPlugin()],
                 tsconfig: "./tsconfig.json",
                 absWorkingDir: process.cwd(),
+                minify: true,
             });
             console.log(`\t ${dir} built`);
         } catch (e) {}

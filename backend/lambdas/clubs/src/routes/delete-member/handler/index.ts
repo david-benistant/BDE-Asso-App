@@ -13,6 +13,7 @@ import notificationsRepository from "@repositories/notifications.repository";
 import NotificationValueObject from "@valueObjects/notifications.valueObject";
 import UserValueObject from "@valueObjects/users.valueObject";
 import usersRepository from "@repositories/users.repository";
+import NotificationService from "@services/notifications.service";
 
 const baseHandler: Handler = async (
     event: TypedAPIGatewayEvent<{}, TPathParams>,
@@ -56,7 +57,7 @@ const baseHandler: Handler = async (
 
     await usersRepository.put(newUser);
 
-    await notificationsRepository.put(
+    await NotificationService.send(
         NotificationValueObject.create(
             "kicked-from-club",
             {
@@ -66,7 +67,7 @@ const baseHandler: Handler = async (
                     .find((member) => member.id === club.getPresidentId())
                     .displayName,
             },
-            userId,
+            user,
             club.getId(),
         ),
     );

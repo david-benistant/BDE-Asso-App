@@ -26,15 +26,19 @@ import eventsRepository from "@repositories/api/events/club/:clubId/:visibility/
 import eventSubscribeRepository from "@repositories/api/events/club/:clubId/subscribe/:id/handlers";
 import eventUnsubscribeRepository from "@repositories/api/events/club/:clubId/unsubscribe/:id/handlers";
 import UpdateEventModal from "./UpdateEventModal";
+import MembersModal from "./Settings/MembersModal";
+import userRespository from "@repositories/api/users/:id/handlers"
 
 const PresidentAndNumbers = ({
     club,
     setClub,
     setCreateEventModalOpen,
+    setShowMembersModal,
 }: {
     club: ClubValueObject;
     setClub: (value: ClubValueObject) => void;
     setCreateEventModalOpen: (value: boolean) => void;
+    setShowMembersModal: (value: boolean) => void;
 }) => {
     const [president, setPresident] = useState<UserValueObject | undefined>();
     const { toast } = useToast();
@@ -264,16 +268,22 @@ const PresidentAndNumbers = ({
                     </button>
                 </div>
             </div>
-            {(isOrganisator || isPresident) && (
-                <div className="flex items-center mt-10 gap-4">
+            <div className="flex flex-col items-center mt-10 gap-4">
+                {(isOrganisator || isPresident) && (
                     <button
                         onClick={() => setCreateEventModalOpen(true)}
                         className="w-full h-10 bg-gray-800 text-white rounded cursor-pointer"
                     >
                         Créer un évènement
                     </button>
-                </div>
-            )}
+                )}
+                <button
+                    onClick={() => setShowMembersModal(true)}
+                    className="w-full h-10 bg-white text-gray-800 border border-gray-800 rounded cursor-pointer"
+                >
+                    Voir les membres
+                </button>
+            </div>
         </>
     );
 };
@@ -287,6 +297,12 @@ const Club = () => {
     const [club, setClub] = useState<ClubValueObject | undefined>();
     const isPresident = accountInfos?.oid === club?.getPresidentId();
 
+    const isMember = club
+        ?.getMembers()
+        .find((member) => member.id === accountInfos?.oid)
+        ? true
+        : false;
+
     const { id, eventId } = useParams<{ id: string; eventId: string }>();
     const { toast } = useToast();
 
@@ -299,6 +315,7 @@ const Club = () => {
         useState<EventValueObject | null>(null);
 
     const [events, setEvents] = useState<EventValueObject[]>([]);
+    const [showMembersModal, setShowMembersModal] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchDatas = async () => {
@@ -375,6 +392,15 @@ const Club = () => {
                 </div>
             </Layout>
         );
+    }
+
+    const sendMessage = async (userId: string) => {
+        const userRespo = new userRespository(userId)
+        const response = await userRespo.get();
+        if (response.isFailure) {
+            toast(response.getError(), "error")
+        }
+        window.open(`https://teams.microsoft.com/l/chat/0/0?users=${response.getValue().getEmail()}`)
     }
 
     const toggleSubscribe = async (event: EventValueObject) => {
@@ -494,6 +520,14 @@ const Club = () => {
                     setEvents={setEvents}
                 />
             )}
+            {showMembersModal && (
+                <MembersModal
+                    setIsOpen={setShowMembersModal}
+                    members={club.getMembers()}
+                    buttonText={"Envoyer un message"}
+                    buttonAction={(member) => sendMessage(member.id)}
+                />
+            )}
             {updateEventModalOpen && updateEventModalObject && (
                 <UpdateEventModal
                     setIsOpen={setUpdateEventModalOpen}
@@ -533,6 +567,7 @@ const Club = () => {
                                     setCreateEventModalOpen={
                                         setCreateEventModalOpen
                                     }
+                                    setShowMembersModal={setShowMembersModal}
                                 />
                             </div>
 
@@ -575,6 +610,9 @@ const Club = () => {
                                                 onClick={() => {
                                                     setEventModalOpen(true);
                                                     setEventModalContent(event);
+                                                    navigate(
+                                                        `/club/${event.getClubId()}/event/${event.getId()}`,
+                                                    );
                                                 }}
                                                 className="cursor-pointer px-4 py-2 text-sm font-medium border rounded-lg hover:bg-gray-100"
                                             >
@@ -597,7 +635,7 @@ const Club = () => {
                                                     ? "Se désinscrire"
                                                     : "S’inscrire"}
                                             </button>
-                                            {isPresident && (
+                                            {(isPresident || isMember) && (
                                                 <button
                                                     onClick={() => {
                                                         setUpdateEventModalObject(
@@ -625,6 +663,7 @@ const Club = () => {
                                 setCreateEventModalOpen={
                                     setCreateEventModalOpen
                                 }
+                                setShowMembersModal={setShowMembersModal}
                             />
                         </div>
                     </div>

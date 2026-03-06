@@ -1,7 +1,8 @@
+import { picturesCDNEndpoint } from "@src/endpointsConfig";
 
 
 class picturesCDN {
-    private endpoint = "https://dyvlfli0anz5v.cloudfront.net"
+    private endpoint = picturesCDNEndpoint
 
     get(hash: string) {
         return `${this.endpoint}/${hash}`

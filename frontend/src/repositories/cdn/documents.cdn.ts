@@ -1,11 +1,12 @@
+import { documentsCDNEndpoint } from "@src/endpointsConfig";
 
 
-class picturesCDN {
-    private endpoint = "https://d1fjeonelx84mf.cloudfront.net"
+class documentsCDN {
+    private endpoint = documentsCDNEndpoint
 
     get(path: string) {
         return `${this.endpoint}/${path}`
     }
 }
 
-export default new picturesCDN;
+export default new documentsCDN;

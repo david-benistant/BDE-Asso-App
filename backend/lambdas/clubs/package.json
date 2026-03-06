@@ -12,10 +12,12 @@
     "@middy/http-json-body-parser": "^7.0.2",
     "@sinclair/typebox": "^0.34.48",
     "@types/aws-lambda": "^8.10.160",
+    "@types/mailgun-js": "^0.22.19",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "esbuild": "^0.19.2",
     "jsonwebtoken": "^9.0.3",
+    "mailgun.js": "^12.7.1",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

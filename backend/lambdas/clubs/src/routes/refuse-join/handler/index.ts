@@ -11,8 +11,8 @@ import usersRepository from "@repositories/users.repository";
 import joinRequestRepository from "@repositories/join-request.repository";
 import ApiError, { ApiErrorStatus } from "@services/errors.service";
 import schemaValidatorMiddleware from "@middlewares/schema-validator";
-import notificationsRepository from "@repositories/notifications.repository";
 import NotificationValueObject from "@valueObjects/notifications.valueObject";
+import notifictionsService from "@services/notifications.service";
 
 export const baseHandler: Handler = async (
     event: TypedAPIGatewayEvent<TBody, TPathParams>,
@@ -31,13 +31,21 @@ export const baseHandler: Handler = async (
     }
     await joinRequestRepository.delete(id, event.body.userId);
 
-    await notificationsRepository.put(
-        NotificationValueObject.create("refused-from-club", {
-            ":clubName": club.getDisplayName(),
-            ":clubPresident": club
-                .getMembers()
-                .find((member) => member.id === club.getPresidentId()).displayName,
-        }, event.body.userId, club.getId()),
+    const user = await usersRepository.get(event.body.userId);
+
+    await notifictionsService.send(
+        NotificationValueObject.create(
+            "refused-from-club",
+            {
+                ":clubName": club.getDisplayName(),
+                ":clubPresident": club
+                    .getMembers()
+                    .find((member) => member.id === club.getPresidentId())
+                    .displayName,
+            },
+            user,
+            club.getId(),
+        ),
     );
 
     return apiGatewayService.response(204);
