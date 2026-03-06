@@ -10,7 +10,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 dir("backend/infra.dev") {
-                    sh 'ls -al'
+                    sh 'terraform init'
                 }
             }
         }
