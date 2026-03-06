@@ -9,15 +9,15 @@ pipeline {
     stages {
         stage('Terraform Init') {
             steps {
-                // dir("${TF_WORKSPACE}") {
+                dir("backend/infra.dev") {
                     sh 'ls -al'
-                // }
+                }
             }
         }
 
         stage('Terraform Plan') {
             steps {
-                dir("${TF_WORKSPACE}") {
+                dir("backend/infra.dev") {
                     sh "terraform plan -out=${TF_PLAN_FILE} -var-file=../properties.json"
                 }
             }
