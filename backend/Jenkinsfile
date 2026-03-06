@@ -10,7 +10,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 dir("${TF_WORKSPACE}") {
-                    sh 'terraform init'
+                    sh 'ls -al'
                 }
             }
         }
