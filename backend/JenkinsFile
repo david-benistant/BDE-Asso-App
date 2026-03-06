@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        TF_WORKSPACE = "dev"
+        TF_WORKSPACE = "infra.dev"
         TF_PLAN_FILE = "tfplan.out"
     }
 
@@ -15,7 +15,7 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                sh "terraform plan -out=${TF_PLAN_FILE}"
+                sh "terraform plan -out=${TF_PLAN_FILE} -var-file=../properties.json"
             }
         }
 
@@ -25,10 +25,10 @@ pipeline {
             }
         }
 
-        stage('Terraform Apply') {
-            steps {
-                sh "terraform apply ${TF_PLAN_FILE}"
-            }
-        }
+        // stage('Terraform Apply') {
+        //     steps {
+        //         sh "terraform apply ${TF_PLAN_FILE}"
+        //     }
+        // }
     }
 }
