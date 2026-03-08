@@ -15,10 +15,6 @@ h1{
     text-align:center;
 }
 
-#fileInput{
-    margin-bottom:20px;
-}
-
 .container{
     max-width:1000px;
     margin:auto;
@@ -66,8 +62,6 @@ h1{
 
 <h1>Terraform Plan Viewer</h1>
 
-<input type="file" id="fileInput" />
-
 <div id="summary"></div>
 
 <div id="changes"></div>
@@ -76,32 +70,22 @@ h1{
 
 <script>
 
-document.getElementById("fileInput").addEventListener("change", function(event){
+window.addEventListener("DOMContentLoaded", () => {
 
-    const file = event.target.files[0]
-
-    const reader = new FileReader()
-
-    reader.onload = function(e){
-
-        const data = JSON.parse(e.target.result)
-
-        renderTerraformPlan(data)
-
-    }
-
-    reader.readAsText(file)
-
+    renderTerraformPlan()
 })
 
-function renderTerraformPlan(plan){
+function renderTerraformPlan(){
 
+    const plan = INSERT_PLAN
     const container = document.getElementById("changes")
     const summary = document.getElementById("summary")
 
     container.innerHTML = ""
 
     const changes = plan.resource_changes || []
+
+    console.log(changes)
 
     let stats = {
         create:0,
@@ -113,7 +97,6 @@ function renderTerraformPlan(plan){
     changes.forEach(change => {
 
         const actions = change.change.actions
-
         let type = actions.join(",")
 
         if(actions.includes("create") && actions.includes("delete")){

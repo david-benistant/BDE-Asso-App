@@ -1,5 +1,5 @@
 {
-    "STAGE": "dev",
+    "STAGE": "test",
     "AZURE_CLIENT_ID": "25962da1-190d-479b-889f-d47b6c92c3af",
     "USERS_TABLE": "asso-app-users",
     "PROFILES_BUCKET": "asso-app-profiles",

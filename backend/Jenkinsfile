@@ -70,28 +70,16 @@ pipeline {
                     bash -c '
                     secrets=("${JWT_SECRET}" "${MAILGUN_KEY}")
                     terraform show -json ${TF_PLAN_FILE} | sed -f <(for s in "${secrets[@]}"; do echo "s/$s/*******/g"; done) > tfplan.json
+                    sed '/INSERT_PLAN/{
+                    r tfplan.json
+                    d
+                    }' ../terraform-changes.html > terraform-changes.html
                     '
                     '''
                     archiveArtifacts artifacts: 'tfplan.json', fingerprint: true
                 }
             }
         }
-
-        stage('Publish HTML report') {
-            steps {
-                script {
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'backend',
-                        reportFiles: 'terraform-changes.html',
-                        reportName: 'terraform changed'
-                    ])
-                }
-            }
-        }
-
 
         stage('Approve Plan') {
             steps {
