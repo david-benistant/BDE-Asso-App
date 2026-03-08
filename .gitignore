@@ -11,5 +11,4 @@ terraform.tfvars
 .DS_Store
 
 plan.json
-plan2.json
 tfplan.out
