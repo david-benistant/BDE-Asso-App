@@ -63,13 +63,18 @@ pipeline {
             }
         }
 
-        // stage('Terraform Show') {
-        //     steps {
-        //         dir("backend/infra.dev") {
-        //             sh "terraform show --json ${TF_PLAN_FILE}"
-        //         }
-        //     }
-        // }
+        stage('Terraform json changes') {
+            steps {
+                dir("backend/infra.dev") {
+                    sh '''
+                    secrets=("${JWT_SECRET}" "${MAILGUN_KEY}")
+                    terraform show -json ${TF_PLAN_FILE} | sed -f <(for s in "${secrets[@]}"; do echo "s/$s/*******/g"; done) > tfplan.json
+                    archiveArtifacts artifacts: 'tfplan.json', fingerprint: true
+                    '''
+                }
+            }
+        }
+
 
         stage('Approve Plan') {
             steps {
