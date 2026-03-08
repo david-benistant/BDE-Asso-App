@@ -56,7 +56,10 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 dir("backend/infra.dev") {
-                    sh "terraform plan -no-color -out=${TF_PLAN_FILE} -var-file=../properties.json"
+                    sh '''
+                    unset TF_WORKSPACE
+                    terraform plan -no-color -out=${TF_PLAN_FILE} -var-file=../properties.json
+                    '''
                 }
             }
         }
