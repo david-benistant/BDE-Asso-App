@@ -10,7 +10,6 @@ pipeline {
         AWS_REGION="eu-west-3"
         JWT_SECRET = credentials('JWT_SECRET')
         MAILGUN_KEY = credentials('MAILGUN_KEY')
-        TF_WORKSPACE = "dev"
     }
 
 
@@ -19,6 +18,7 @@ pipeline {
             steps {
                 dir("backend/infra.dev") {
                     sh '''
+                    export TF_WORKSPACE=dev
                     terraform init -no-color -reconfigure -input=false
                     '''
                 }
@@ -56,6 +56,7 @@ pipeline {
             steps {
                 dir("backend/infra.dev") {
                     sh '''
+                    export TF_WORKSPACE=dev
                     terraform plan -no-color -out=${TF_PLAN_FILE} -var-file=../properties.json
                     '''
                 }
