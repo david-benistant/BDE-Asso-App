@@ -4,21 +4,34 @@ pipeline {
     environment {
         TF_WORKSPACE = "infra.dev"
         TF_PLAN_FILE = "tfplan.out"
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        JWT_SECRET = credentials('JWT_SECRET')
+        MAILGUN_KEY = credentials('MAILGUN_KEY')
     }
 
     stages {
         stage('Terraform Init') {
             steps {
                 dir("backend/infra.dev") {
-                    sh 'terraform init'
+                    sh 'terraform init -no-color'
                 }
+            }
+        }
+
+        stage('Generate tfvars') {
+            steps {
+                sh '''
+                echo "JWT_SECRET = \\"$JWT_SECRET\\"" > terraform.tfvars
+                echo "MAILGUN_KEY = \\"$MAILGUN_KEY\\"" >> terraform.tfvars
+                '''
             }
         }
 
         stage('Terraform Plan') {
             steps {
                 dir("backend/infra.dev") {
-                    sh "terraform plan -out=${TF_PLAN_FILE} -var-file=../properties.json"
+                    sh "terraform plan -no-color -out=${TF_PLAN_FILE} -var-file=../properties.json"
                 }
             }
         }
