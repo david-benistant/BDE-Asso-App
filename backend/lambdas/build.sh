@@ -6,3 +6,4 @@ for dir in ./*/; do
     (cd "$dir" && node build.js)
   fi
 done
+x@x@
