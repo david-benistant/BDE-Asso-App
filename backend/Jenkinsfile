@@ -18,7 +18,7 @@ pipeline {
     stages {
         stage('Terraform Init') {
             steps {
-                dir("backend/infra.dev") {
+                dir("backend/infra") {
                     sh '''
                     terraform init -no-color -reconfigure -input=false
                     '''
@@ -56,7 +56,7 @@ pipeline {
 
         stage('Generate tfvars') {
             steps {
-                dir("backend/infra.dev") {
+                dir("backend/infra") {
                     sh '''
                     echo "JWT_SECRET = \\"$JWT_SECRET\\"" > terraform.tfvars
                     echo "MAILGUN_KEY = \\"$MAILGUN_KEY\\"" >> terraform.tfvars
@@ -67,7 +67,7 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                dir("backend/infra.dev") {
+                dir("backend/infra") {
                     sh '''
                     terraform plan -no-color -out=${TF_PLAN_FILE} -var-file=../properties.json
                     '''
@@ -85,7 +85,7 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                dir("backend/infra.dev") {
+                dir("backend/infra") {
                     sh '''
                         terraform apply -auto-approve tfplan.out -no-color
                     '''
