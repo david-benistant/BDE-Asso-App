@@ -21,14 +21,14 @@ provider "aws" {
 
 module "s3" {
   source = "./modules/s3"
-  STAGE = local.STAGE
+  STAGE = var.STAGE
   PROFILES_BUCKET = var.PROFILES_BUCKET
   PICTURES_BUCKET = var.PICTURES_BUCKET
   ATTACHMENTS_BUCKET = var.ATTACHMENTS_BUCKET
 }
 module "dynamo-db" {
   source = "./modules/dynamo-db"
-  STAGE = local.STAGE
+  STAGE = var.STAGE
   USERS_TABLE = var.USERS_TABLE
   CLUBS_TABLE = var.CLUBS_TABLE
   NOTIFICATIONS_TABLE = var.NOTIFICATIONS_TABLE
@@ -38,7 +38,7 @@ module "dynamo-db" {
 
 module "api-gateway" {
   source = "./modules/api-gateway"
-  STAGE = local.STAGE
+  STAGE = var.STAGE
 }
 
 
@@ -49,7 +49,7 @@ module "lambdas" {
   api_id = module.api-gateway.api_id
   JWT_SECRET = var.JWT_SECRET
   MAILGUN_KEY = var.MAILGUN_KEY
-  STAGE = local.STAGE
+  STAGE = var.STAGE
   USERS_TABLE = var.USERS_TABLE
   AWS_ACCOUNT_ID = var.AWS_ACCOUNT_ID
 }

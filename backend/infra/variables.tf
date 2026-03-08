@@ -1,6 +1,9 @@
-locals {
-  STAGE = "dev" 
+
+variable "STAGE" {
+  type = string
 }
+
+
 variable "AWS_ACCOUNT_ID" {
   type = string
 }
