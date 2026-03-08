@@ -67,10 +67,12 @@ pipeline {
             steps {
                 dir("backend/infra.dev") {
                     sh '''
+                    bash -c '
                     secrets=("${JWT_SECRET}" "${MAILGUN_KEY}")
                     terraform show -json ${TF_PLAN_FILE} | sed -f <(for s in "${secrets[@]}"; do echo "s/$s/*******/g"; done) > tfplan.json
-                    archiveArtifacts artifacts: 'tfplan.json', fingerprint: true
+                    '
                     '''
+                    archiveArtifacts artifacts: 'tfplan.json', fingerprint: true
                 }
             }
         }
