@@ -1,7 +1,7 @@
 
 terraform {
   backend "s3" {
-    bucket         = "asso-app-terraform-state-bucket-dev"
+    bucket         = "asso-app-terraform-state-bucket-${var.STAGE}"
     key            = "terraform.tfstate"
     region         = "eu-west-3"
     encrypt        = true

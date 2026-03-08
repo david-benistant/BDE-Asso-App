@@ -18,6 +18,7 @@ pipeline {
             steps {
                 dir("backend/infra.dev") {
                     sh '''
+                    rm -rf .terraform
                     unset TF_WORKSPACE
                     terraform init -no-color -reconfigure -input=false
                     '''
@@ -76,7 +77,7 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                dir("${TF_WORKSPACE}") {
+                dir("backend/infra.dev") {
                     sh "terraform apply ${TF_PLAN_FILE} -var-file=../properties.json -auto-approve "
                 }
             }
