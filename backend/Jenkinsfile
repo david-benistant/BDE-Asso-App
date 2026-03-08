@@ -18,7 +18,7 @@ pipeline {
             steps {
                 dir("backend/infra.dev") {
                     sh '''
-                    terraform workspace select default || terraform workspace new default
+                    unset TF_WORKSPACE
                     terraform init -no-color -reconfigure -input=false
                     '''
                 }
