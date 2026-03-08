@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Terraform Plan Viewer</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f8;
+    margin:40px;
+}
+
+h1{
+    text-align:center;
+}
+
+#fileInput{
+    margin-bottom:20px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+.card{
+    background:white;
+    border-radius:8px;
+    padding:16px;
+    margin-bottom:12px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.resource{
+    font-weight:bold;
+    font-size:16px;
+}
+
+.badge{
+    padding:4px 10px;
+    border-radius:12px;
+    font-size:12px;
+    margin-left:10px;
+}
+
+.create{background:#2ecc71;color:white;}
+.update{background:#f39c12;color:white;}
+.delete{background:#e74c3c;color:white;}
+.replace{background:#9b59b6;color:white;}
+
+.details{
+    margin-top:10px;
+    font-family:monospace;
+    background:#fafafa;
+    padding:10px;
+    border-radius:4px;
+    overflow:auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Terraform Plan Viewer</h1>
+
+<input type="file" id="fileInput" />
+
+<div id="summary"></div>
+
+<div id="changes"></div>
+
+</div>
+
+<script>
+
+document.getElementById("fileInput").addEventListener("change", function(event){
+
+    const file = event.target.files[0]
+
+    const reader = new FileReader()
+
+    reader.onload = function(e){
+
+        const data = JSON.parse(e.target.result)
+
+        renderTerraformPlan(data)
+
+    }
+
+    reader.readAsText(file)
+
+})
+
+function renderTerraformPlan(plan){
+
+    const container = document.getElementById("changes")
+    const summary = document.getElementById("summary")
+
+    container.innerHTML = ""
+
+    const changes = plan.resource_changes || []
+
+    let stats = {
+        create:0,
+        update:0,
+        delete:0,
+        replace:0
+    }
+
+    changes.forEach(change => {
+
+        const actions = change.change.actions
+
+        let type = actions.join(",")
+
+        if(actions.includes("create") && actions.includes("delete")){
+            type = "replace"
+        }
+
+        if(stats[type] !== undefined){
+            stats[type]++
+        }
+
+        const card = document.createElement("div")
+        card.className = "card"
+
+        const resource = document.createElement("div")
+        resource.className = "resource"
+        resource.innerText = change.address
+
+        const badge = document.createElement("span")
+        badge.className = "badge " + type
+        badge.innerText = type
+
+        resource.appendChild(badge)
+
+        const details = document.createElement("div")
+        details.className = "details"
+
+        details.innerText = JSON.stringify({
+            before: change.change.before,
+            after: change.change.after
+        }, null, 2)
+
+        card.appendChild(resource)
+        card.appendChild(details)
+
+        container.appendChild(card)
+
+    })
+
+    summary.innerHTML = `
+        <h3>Summary</h3>
+        Create: ${stats.create} |
+        Update: ${stats.update} |
+        Delete: ${stats.delete} |
+        Replace: ${stats.replace}
+        <hr>
+    `
+}
+
+</script>
+
+</body>
+</html>

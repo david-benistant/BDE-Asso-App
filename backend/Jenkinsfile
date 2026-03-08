@@ -77,15 +77,30 @@ pipeline {
             }
         }
 
+        stage('Publish HTML report') {
+            steps {
+                script {
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'backend',
+                        reportFiles: 'terraform-changes.html',
+                        reportName: 'terraform changed'
+                    ])
+                }
+            }
+        }
+
 
         stage('Approve Plan') {
-    steps {
-        script {
-            def url = "${env.BUILD_URL}artifact/backend/infra.dev/tfplan.json"
-            input message: "Voir le plan Terraform : ${url}\n\nVoulez-vous appliquer ce plan ?"
+            steps {
+                script {
+                    def url = "${env.BUILD_URL}artifact/backend/infra.dev/tfplan.json"
+                    input message: "Voir le plan Terraform : ${url}\n\nVoulez-vous appliquer ce plan ?"
+                }
+            }
         }
-    }
-}
 
         stage('Terraform Apply') {
             steps {
