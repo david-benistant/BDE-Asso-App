@@ -21,10 +21,12 @@ pipeline {
 
         stage('Generate tfvars') {
             steps {
-                sh '''
-                echo "JWT_SECRET = \\"$JWT_SECRET\\"" > terraform.tfvars
-                echo "MAILGUN_KEY = \\"$MAILGUN_KEY\\"" >> terraform.tfvars
-                '''
+                dir("backend/infra.dev") {
+                    sh '''
+                    echo "JWT_SECRET = \\"$JWT_SECRET\\"" > terraform.tfvars
+                    echo "MAILGUN_KEY = \\"$MAILGUN_KEY\\"" >> terraform.tfvars
+                    '''
+                }
             }
         }
 
