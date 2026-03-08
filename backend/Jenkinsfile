@@ -14,7 +14,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 dir("backend/infra.dev") {
-                    sh 'terraform init -no-color'
+                    sh 'terraform init -no-color -reconfigure -input=false'
                 }
             }
         }
