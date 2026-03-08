@@ -79,10 +79,13 @@ pipeline {
 
 
         stage('Approve Plan') {
-            steps {
-                input message: 'Do you voulez appliquer ce plan Terraform ?'
-            }
+    steps {
+        script {
+            def url = "${env.BUILD_URL}artifact/backend/infra.dev/tfplan.json"
+            input message: "Voir le plan Terraform : ${url}\n\nVoulez-vous appliquer ce plan ?"
         }
+    }
+}
 
         stage('Terraform Apply') {
             steps {
