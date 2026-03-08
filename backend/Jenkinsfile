@@ -31,7 +31,6 @@ pipeline {
                 dir("backend") {
                     sh '''
                     cat properties.json > tmp.json &&  jq --arg s "${STAGE}" --arg a "${AWS_ACCOUNT_ID}" '.STAGE=$s | .AWS_ACCOUNT_ID=$a' tmp.json > properties.json
-                    cat properties.json
                     '''
                 }
             }
