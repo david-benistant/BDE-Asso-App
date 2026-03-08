@@ -1,151 +1,224 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Terraform Plan Viewer</title>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Terraform Plan Viewer</title>
 
-<style>
-body{
-    font-family: Arial, sans-serif;
-    background:#f4f6f8;
-    margin:40px;
-}
+        <style>
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background: #f0f2f5;
+                margin: 0;
+                padding: 40px 20px;
+                color: #333;
+            }
 
-h1{
-    text-align:center;
-}
+            h1 {
+                text-align: center;
+                margin-bottom: 30px;
+                font-weight: 600;
+            }
 
-.container{
-    max-width:1000px;
-    margin:auto;
-}
+            .container {
+                max-width: 1000px;
+                margin: auto;
+            }
 
-.card{
-    background:white;
-    border-radius:8px;
-    padding:16px;
-    margin-bottom:12px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.1);
-}
+            .card {
+                background: #fff;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 16px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                transition: transform 0.2s;
+            }
 
-.resource{
-    font-weight:bold;
-    font-size:16px;
-}
+            .card:hover {
+                transform: translateY(-3px);
+            }
 
-.badge{
-    padding:4px 10px;
-    border-radius:12px;
-    font-size:12px;
-    margin-left:10px;
-}
+            .resource {
+                font-weight: 600;
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
 
-.create{background:#2ecc71;color:white;}
-.update{background:#f39c12;color:white;}
-.delete{background:#e74c3c;color:white;}
-.replace{background:#9b59b6;color:white;}
+            .badge {
+                padding: 5px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 500;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: white;
+            }
 
-.details{
-    margin-top:10px;
-    font-family:monospace;
-    background:#fafafa;
-    padding:10px;
-    border-radius:4px;
-    overflow:auto;
-}
-</style>
-</head>
+            .create {
+                background: #28a745;
+            }
+            .update {
+                background: #ffc107;
+                color: #212529;
+            }
+            .delete {
+                background: #dc3545;
+            }
+            .replace {
+                background: #6f42c1;
+            }
 
-<body>
+            .details {
+                margin-top: 12px;
+                font-family: monospace;
+                background: #f8f9fa;
+                padding: 12px;
+                border-radius: 6px;
+                overflow-x: auto;
+            }
 
-<div class="container">
+            #summary {
+                margin-bottom: 20px;
+                background: #fff;
+                padding: 18px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
 
-<h1>Terraform Plan Viewer</h1>
+            #summary h3 {
+                margin-top: 0;
+                margin-bottom: 10px;
+            }
 
-<div id="summary"></div>
+            #summary hr {
+                margin-top: 12px;
+                margin-bottom: 0;
+                border: none;
+                border-top: 1px solid #dee2e6;
+            }
+        </style>
+    </head>
 
-<div id="changes"></div>
+    <body>
+        <div class="container">
+            <h1>Terraform Plan Viewer</h1>
+            <div id="summary"></div>
+            <div id="changes"></div>
+        </div>
 
-</div>
+        <script>
+            window.addEventListener("DOMContentLoaded", () => {
+                renderTerraformPlan();
+            });
 
-<script>
+            function renderTerraformPlan() {
+                const plan =
+INSERT_PLAN;
 
-window.addEventListener("DOMContentLoaded", () => {
+                const container = document.getElementById("changes");
+                const summary = document.getElementById("summary");
 
-    renderTerraformPlan()
-})
+                container.innerHTML = "";
+                summary.innerHTML = "";
 
-function renderTerraformPlan(){
+                const changes = (plan.resource_changes || []).filter(
+                    (change) => {
+                        const actions = change.change.actions;
+                        return (
+                            actions.includes("create") ||
+                            actions.includes("update") ||
+                            actions.includes("delete") ||
+                            (actions.includes("create") &&
+                                actions.includes("delete"))
+                        );
+                    },
+                );
 
-    const plan = INSERT_PLAN
-    const container = document.getElementById("changes")
-    const summary = document.getElementById("summary")
+                if (changes.length === 0) {
+                    summary.style.display = "none";
+                    return;
+                }
 
-    container.innerHTML = ""
+                let stats = { create: 0, update: 0, delete: 0, replace: 0 };
 
-    const changes = plan.resource_changes || []
+                changes.forEach((change) => {
+                    const actions = change.change.actions;
+                    let type = actions.join(",");
 
-    console.log(changes)
+                    if (
+                        actions.includes("create") &&
+                        actions.includes("delete")
+                    )
+                        type = "replace";
 
-    let stats = {
-        create:0,
-        update:0,
-        delete:0,
-        replace:0
-    }
+                    if (stats[type] !== undefined) stats[type]++;
 
-    changes.forEach(change => {
+                    const card = document.createElement("div");
+                    card.className = "card";
 
-        const actions = change.change.actions
-        let type = actions.join(",")
+                    const resource = document.createElement("div");
+                    resource.className = "resource";
+                    resource.innerText = change.address;
 
-        if(actions.includes("create") && actions.includes("delete")){
-            type = "replace"
-        }
+                    const badge = document.createElement("span");
+                    badge.className = "badge " + type;
+                    badge.innerText = type;
+                    resource.appendChild(badge);
 
-        if(stats[type] !== undefined){
-            stats[type]++
-        }
+                    const details = document.createElement("div");
+                    details.className = "details";
 
-        const card = document.createElement("div")
-        card.className = "card"
+                    details.innerHTML = renderChangedAttributes(
+                        change.change.before,
+                        change.change.after,
+                    );
 
-        const resource = document.createElement("div")
-        resource.className = "resource"
-        resource.innerText = change.address
+                    card.appendChild(resource);
+                    card.appendChild(details);
+                    container.appendChild(card);
+                });
 
-        const badge = document.createElement("span")
-        badge.className = "badge " + type
-        badge.innerText = type
-
-        resource.appendChild(badge)
-
-        const details = document.createElement("div")
-        details.className = "details"
-
-        details.innerText = JSON.stringify({
-            before: change.change.before,
-            after: change.change.after
-        }, null, 2)
-
-        card.appendChild(resource)
-        card.appendChild(details)
-
-        container.appendChild(card)
-
-    })
-
-    summary.innerHTML = `
-        <h3>Summary</h3>
-        Create: ${stats.create} |
-        Update: ${stats.update} |
-        Delete: ${stats.delete} |
-        Replace: ${stats.replace}
+                summary.innerHTML = `
+        <h3>Résumé des changements</h3>
+        Création: ${stats.create} | Mise à jour: ${stats.update} | Suppression: ${stats.delete} | Remplacement: ${stats.replace}
         <hr>
-    `
-}
+    `;
+            }
 
-</script>
+            function renderChangedAttributes(before, after) {
+                const ignoreFields = ["last_modified"];
 
-</body>
+                if (!before && after)
+                    return `<b>Création:</b> ${formatObject(after)}`;
+                if (before && !after)
+                    return `<b>Suppression:</b> ${formatObject(before)}`;
+                if (!before && !after) return "Aucun détail";
+
+                let html = "<b>Changements:</b><br><ul>";
+                const keys = new Set([
+                    ...Object.keys(before || {}),
+                    ...Object.keys(after || {}),
+                ]);
+
+                keys.forEach((key) => {
+                    if (ignoreFields.includes(key)) return;
+
+                    const valBefore = JSON.stringify(before[key]);
+                    const valAfter = JSON.stringify(after[key]);
+                    if (valBefore !== valAfter) {
+                        html += `<li><b>${key}</b>: <span style="color:red">Avant: ${valBefore}</span> → <span style="color:green">Après: ${valAfter}</span></li>`;
+                    }
+                });
+
+                html += "</ul>";
+                return html;
+            }
+
+            // Fonction pour formater joliment les objets JSON
+            function formatObject(obj) {
+                return "<pre>" + JSON.stringify(obj, null, 2) + "</pre>";
+            }
+        </script>
+    </body>
 </html>
