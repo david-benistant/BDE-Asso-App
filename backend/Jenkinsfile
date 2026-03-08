@@ -19,6 +19,22 @@ pipeline {
             }
         }
 
+        stage('Install lambdas dependencies') {
+            steps {
+                dir("backend/lambdas") {
+                    sh "./install.sh"
+                }
+            }
+        }
+
+        stage('Build lambdas') {
+            steps {
+                dir("backend/lambdas") {
+                    sh "./build.sh"
+                }
+            }
+        }
+
         stage('Generate tfvars') {
             steps {
                 dir("backend/infra.dev") {
