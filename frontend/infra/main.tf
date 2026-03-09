@@ -51,15 +51,15 @@ resource "aws_s3_object" "react_build" {
   }, element(reverse(split(".", each.key)), 0), "binary/octet-stream")
 }
 
-resource "aws_cloudfront_invalidation" "react_cache_invalidation" {
 
-  distribution_id = var.CLOUDFRONT_ID
-
-  paths = [
-    "/*"
-  ]
-
-  depends_on = [
-    aws_s3_object.react_build
-  ]
+action "aws_cloudfront_invalidation" "react_cache_invalidation" {
+    config {
+      distribution_id = var.CLOUDFRONT_ID
+        paths = [
+            "/*"
+        ]
+        depends_on = [
+            aws_s3_object.react_build
+        ]
+    }
 }
