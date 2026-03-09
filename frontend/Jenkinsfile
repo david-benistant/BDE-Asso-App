@@ -1,0 +1,84 @@
+pipeline {
+    agent any
+
+    environment {
+        TF_WORKSPACE = "${params.STAGE}"
+        TF_PLAN_FILE = "tfplan.out"
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        AWS_DEFAULT_REGION="eu-west-3"
+        AWS_REGION="eu-west-3"
+        STAGE = "${params.STAGE}"
+        PROPERTIES = "${params.PROPERTIES}"
+    }
+
+
+    stages {
+        stage('Terraform Init') {
+            steps {
+                dir("frontend/infra") {
+                    sh '''
+                    terraform init -no-color -reconfigure -input=false
+                    '''
+                }
+            }
+        }
+
+        stage('Edit properties') {
+            steps {
+                dir("frontend") {
+                    sh '''
+                    echo ${PROPERTIES} > properties.json
+                    cat properties.json > tmp.json && jq --arg s "${STAGE}" '.STAGE=$s' tmp.json > properties.json
+                    cat properties.json
+                    '''
+                }
+            }
+        }
+
+
+        stage('Install dependencies') {
+            steps {
+                dir("frontend") {
+                    sh "bun install"
+                }
+            }
+        }
+
+        stage('Build app') {
+            steps {
+                dir("frontend") {
+                    sh "bun run build"
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                dir("frontend/infra") {
+                    sh '''
+                    terraform plan -no-color -out=${TF_PLAN_FILE} -var-file=../properties.json
+                    '''
+                }
+            }
+        }
+
+        stage('Approve Plan') {
+            steps {
+                script {
+                    input message: "Voulez-vous appliquer ce plan ?"
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                dir("frontend/infra") {
+                    sh '''
+                        terraform apply -auto-approve tfplan.out -no-color
+                    '''
+                }
+            }
+        }
+    }
+}
