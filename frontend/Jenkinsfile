@@ -30,7 +30,6 @@ pipeline {
                     sh '''
                     echo ${PROPERTIES} > properties.json
                     cat properties.json > tmp.json && jq --arg s "${STAGE}" '.STAGE=$s' tmp.json > properties.json
-                    cat properties.json
                     '''
                 }
             }
