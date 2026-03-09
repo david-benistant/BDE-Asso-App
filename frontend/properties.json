@@ -1,4 +1,9 @@
 {
     "STAGE": "prod",
-    "CLOUDFRONT_ID": "EZQFLR2TOR1D4"
+    "CLOUDFRONT_ID": "EZQFLR2TOR1D4",
+    "AUTH_API_ENDPOINT": "https://vn30kzmwvj.execute-api.eu-west-3.amazonaws.com/prod/auth/login",
+    "API_ENDPOINT": "https://vn30kzmwvj.execute-api.eu-west-3.amazonaws.com/prod",
+    "DOCUMENTS_CDN_ENDPOINT": "https://d1fjeonelx84mf.cloudfront.net",
+    "PICTURES_CDN_ENDPOINT": "https://dyvlfli0anz5v.cloudfront.net",
+    "PROFILES_CDN_ENDPOINT": "https://d149itoigrs52f.cloudfront.net"
 }
