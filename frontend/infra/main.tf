@@ -50,14 +50,3 @@ resource "aws_s3_object" "react_build" {
     ico  = "image/x-icon"
   }, element(reverse(split(".", each.key)), 0), "binary/octet-stream")
 }
-resource "null_resource" "react_cache_invalidation" {
-  depends_on = [aws_s3_object.react_build]
-
-  provisioner "local-exec" {
-    command = <<EOT
-      aws cloudfront create-invalidation \
-        --distribution-id ${var.CLOUDFRONT_ID} \
-        --paths "/*"
-    EOT
-  }
-}

@@ -79,5 +79,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Invalidate cache') {
+            steps {
+                dir("frontend") {
+                    sh '''aws cloudfront create-invalidation --distribution-id $(jq -r '.CLOUDFRONT_ID' properties.json) --paths "/*"'''
+                }
+            }
+        }
     }
 }
