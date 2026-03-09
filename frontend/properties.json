@@ -1,4 +1,4 @@
 {
-    "STAGE": "dev",
-    "CLOUDFRONT_ID": ""
+    "STAGE": "prod",
+    "CLOUDFRONT_ID": "EZQFLR2TOR1D4"
 }
