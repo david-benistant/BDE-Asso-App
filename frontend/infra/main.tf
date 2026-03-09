@@ -1,7 +1,7 @@
 
 terraform {
   backend "s3" {
-    bucket         = "asso-app-terraform-state-bucket-front"
+    bucket         = "asso-app-terraform-state-bucket-frontend"
     key            = "terraform.tfstate"
     region         = "eu-west-3"
     encrypt        = true
@@ -21,7 +21,7 @@ provider "aws" {
 
 
 resource "aws_s3_bucket" "react_bucket" {
-  bucket = "asso-app-front-${var.STAGE}"
+  bucket = "asso-app-frontend-${var.STAGE}"
 }
 
 resource "aws_s3_object" "react_build" {
