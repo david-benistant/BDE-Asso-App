@@ -121,6 +121,10 @@ resource "aws_dynamodb_table" "events_table" {
     enabled        = true
   }
 
+  point_in_time_recovery {
+    enabled = true
+  }
+
   global_secondary_index {
     name            = "weeksIndex"
     hash_key        = "weekBucket"
